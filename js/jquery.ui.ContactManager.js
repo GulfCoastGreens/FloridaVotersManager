@@ -305,6 +305,21 @@
                 success: callback
             });            
         },
+        addNewContact: function(first,last,nickname,contactType,callback) {
+            $.ajax({
+                title: "Please wait...",
+                data: {
+                    method: "addNewContact",
+                    params: JSON.stringify({
+                        first: first,
+                        last: last,
+                        nickname: nickname,
+                        contactType: contactType
+                    })
+                },
+                success: callback
+            });            
+        },
         getContacts: function(contactType,callback) {
             $.ajax({
                 title: "Please wait...",
@@ -693,7 +708,7 @@
                                                         fields.fnx.currentContact.input.empty();
                                                         $.each(getContactsResponse.contacts,function(index,contact) {
                                                             fields.fnx.currentContact.input.append(
-                                                                $('<option />').val(contact["Contact ID"]).html("Nothing Yet")
+                                                                $('<option />').val(contact["Contact ID"]).html([contact["Name Last"],contact["Name First"]].join(', '))
                                                             );
                                                         });
                                                     });
@@ -702,8 +717,13 @@
                                             break;
                                         case "contactButton":
                                             fields.fnx.contactButton.input.click(function() {
-                                                var hash = $(this).data();
-                                                hash.dialog = $('<div />')
+                                                $('<div />')
+                                                .data({
+                                                    first: $('<input />'),
+                                                    last: $('<input />'),
+                                                    nickname: $('<input />'),
+                                                    contactTypes: fields.fnx.contactType.input.clone()
+                                                })
                                                 .addClass('ui-state-default ui-widget-content')
                                                 .append(
                                                     $('<p />')
@@ -728,15 +748,110 @@
                                                         opacity: 0.5
                                                     },
                                                     open: function() {
-                                                        $(hash.first = $('<input />'))
-                                                        .appendTo($(this));
-//                                                        $.cimsPR.schedule.services.ajaxRetrieveChainRules({
-//                                                            recursionIndex: 3
-//                                                        });
+                                                        $(this)
+                                                        .append(
+                                                            $('<table />')
+                                                            .addClass('ui-state-default ui-widget-content')
+                                                            .append(
+                                                                $('<tr />')
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $('<label />',{
+                                                                            "for": "first"
+                                                                        })
+                                                                        .html("First Name")
+                                                                    )
+                                                                )
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $(this).data('first')
+                                                                        .prop({
+                                                                            "id": "first"
+                                                                        })
+                                                                    )
+                                                                )
+                                                            )
+                                                            .append(
+                                                                $('<tr />')
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $('<label />',{
+                                                                            "for": "last"
+                                                                        })
+                                                                        .html("Last Name")
+                                                                    )
+                                                                )
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $(this).data('last')
+                                                                        .prop({
+                                                                            "id": "last"
+                                                                        })
+                                                                    )
+                                                                )
+                                                            )
+                                                            .append(
+                                                                $('<tr />')
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $('<label />',{
+                                                                            "for": "nickname"
+                                                                        })
+                                                                        .html("Nickname")
+                                                                    )
+                                                                )
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $(this).data('nickname')
+                                                                        .prop({
+                                                                            "id": "nickname"
+                                                                        })
+                                                                    )
+                                                                )
+                                                            )
+                                                            .append(
+                                                                $('<tr />')
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $('<label />',{
+                                                                            "for": "contactTypes"
+                                                                        })
+                                                                        .html("Contact Type for New Contact")
+                                                                    )
+                                                                )
+                                                                .append(
+                                                                    $('<td />')
+                                                                    .append(
+                                                                        $(this).data('contactTypes')
+                                                                        .prop({
+                                                                            "id": "contactTypes"
+                                                                        })
+                                                                    )
+                                                                )
+                                                            )
+                                                        );
                                                     },
                                                     buttons: {
                                                         "Create New Contact": function() {
-                                                            
+                                                            var dialog = $(this);
+                                                            self.addNewContact($(this).data('first').val(),$(this).data('last').val(),$(this).data('nickname').val(),$(this).data('contactTypes').val(),function(addNewContactResponse) {
+                                                                fields.fnx.currentContact.input
+                                                                .append(
+                                                                    $('<option />').val(addNewContactResponse.contact["Contact ID"]).html([addNewContactResponse.contact["Name Last"],addNewContactResponse.contact["Name First"]].join(', '))                                                                    
+                                                                )
+                                                                .val(addNewContactResponse.contact["Contact ID"])
+                                                                .change();
+                                                                dialog.dialog('close');
+                                                                dialog.dialog('destroy');
+                                                                dialog.remove();                                                                
+                                                            });
                                                         },
                                                         "Cancel": function() {
                                                             $(this).dialog('close');

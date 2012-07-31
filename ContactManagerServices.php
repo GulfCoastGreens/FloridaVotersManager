@@ -75,11 +75,57 @@ class ContactManagerServices extends Connection {
                 case "getContacts":
                     // error_log($this->request->contactType);
                     // error_log(var_export($this->request,true));
-                    echo json_encode((object) array('contacts' => $this->getContacts($this->request->contactType)->fetchAll(PDO::FETCH_OBJ)));                    
+                    echo json_encode((object) array('contacts' => $this->getContacts($this->request->contactType)));                    
+                    break;
+                case "addNewContact";
+                    error_log("I'm running");
+                    echo json_encode((object) array('contact' => $this->addNewContact($this->request->first,$this->request->last,$this->request->nickname,$this->request->contactType = "")));
                     break;
             }
             exit;
         }
+    }
+    private function addNewContact($first,$last,$nickname,$contactType="") {
+        $SQL = "INSERT INTO `FloridaVoterData`.`Contacts` (`Name First`,`Name Last`,`Nickname`) VALUES (:first,:last,:nickname)";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":first" => $first,
+            ":last" => $last,
+            ":nickname" => $nickname
+        ));
+        $contactId = $this->dbh->lastInsertId();
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contacts` WHERE `Contact ID` = :contactId";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactId" => $contactId
+        ));
+        $result = $sth->fetchAll(PDO::FETCH_OBJ);
+        if($contactType != "") {
+            $SQL = "INSERT INTO `FloridaVoterData`.`Contact Type Members` (`Contact ID`,`Contact Type`) VALUES (:contactId,:contactType)";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":contactType" => $contactType
+            ));
+        }
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Type Members` WHERE `Contact ID`= :contactId";
+        $sth = $this->dbh->prepare($SQL);
+        for($i = 0; $i < count($result); ++$i) {
+            $sth->execute(array(
+                ":contactId" => $result[$i]->{"Contact ID"}
+            ));            
+            $memberTypes = $sth->fetchAll(PDO::FETCH_OBJ);
+            $result[$i]->{"Contact Types"} = array();
+            $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Types` WHERE `Contact Type`= :contactType";
+            $sth = $this->dbh->prepare($SQL);
+            for($j = 0;$j < count($memberTypes); ++$j) {
+                $sth->execute(array(
+                    ":contactType" => $memberTypes[$j]->{"Contact Type"}
+                )); 
+                $result[$i]->{"Contact Types"}[] = $sth->fetchAll(PDO::FETCH_OBJ);
+            }
+        }
+        return $result[0];
     }
     private function getContacts($contactType="") {
         $SQL="SELECT * FROM `FloridaVoterData`.`Contacts`";
@@ -88,7 +134,25 @@ class ContactManagerServices extends Connection {
         }
         $sth = $this->dbh->prepare($SQL,array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
         ($contactType == "")?$sth->execute():$sth->execute(array(":contactType" => $contactType));
-        return $sth;        
+        $result = $sth->fetchAll(PDO::FETCH_OBJ);
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Type Members` WHERE `Contact ID`= :contactId";
+        $sth = $this->dbh->prepare($SQL);
+        for($i = 0; $i < count($result); ++$i) {
+            $sth->execute(array(
+                ":contactId" => $result[$i]->{"Contact ID"}
+            )); 
+            $memberTypes = $sth->fetchAll(PDO::FETCH_OBJ);
+            $result[$i]->{"Contact Types"} = array();
+            $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Types` WHERE `Contact Type`= :contactType";
+            $sth = $this->dbh->prepare($SQL);
+            for($j = 0;$j < count($memberTypes); ++$j) {
+                $sth->execute(array(
+                    ":contactType" => $memberTypes[$j]->{"Contact Type"}
+                )); 
+                $result[$i]->{"Contact Types"}[] = $sth->fetchAll(PDO::FETCH_OBJ);
+            }
+        }
+        return $result;
     }
     private function showDatabases() {
         $databases = array();
