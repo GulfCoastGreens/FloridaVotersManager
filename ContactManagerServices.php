@@ -81,6 +81,15 @@ class ContactManagerServices extends Connection {
                     error_log("I'm running");
                     echo json_encode((object) array('contact' => $this->addNewContact($this->request->first,$this->request->last,$this->request->nickname,$this->request->contactType)));
                     break;
+                case "addNewContactType":
+                    echo json_encode((object) array('contactType' => $this->addNewContactType($this->request->description)));                    
+                    break;
+                case "addContactToContactType":
+                    echo json_encode((object) array('contactTypeMember' => $this->addContactToContactType($this->request->contactId,$this->request->contactType)));                                        
+                    break;
+                case "removeContactFromContactType":
+                    echo json_encode((object) array('success' => $this->removeContactFromContactType($this->request->contactId,$this->request->contactType))); 
+                    break;
             }
             exit;
         }
@@ -117,8 +126,65 @@ class ContactManagerServices extends Connection {
         $sth->execute(array(
             ":contactId" => $contactId
         ));            
-        $result[0]->{"Contact Types"} = $sth->fetchAll(PDO::FETCH_OBJ);;
+        $result[0]->{"Contact Types"} = $sth->fetchAll(PDO::FETCH_OBJ);
         return $result[0];
+    }
+    private function addNewContactType($contactDescription) {
+        // See if this one already exists
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Types` WHERE `Contact Description` = :contactDescription";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactDescription" => $contactDescription
+        ));
+        $result = $sth->fetchAll(PDO::FETCH_OBJ);
+        if(count($result) < 1) {
+            $SQL = "INSERT INTO `FloridaVoterData`.`Contact Types` (`Contact Description`) VALUES (:contactDescription)";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactDescription" => $contactDescription
+            ));
+            $contactType = $this->dbh->lastInsertId();
+            $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Types` WHERE `Contact Type` = :contactType";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactType" => $contactType
+            ));
+            $result = $sth->fetchAll(PDO::FETCH_OBJ);            
+        }
+        return $result[0];
+    }
+    private function addContactToContactType($contactId,$contactType) {
+        // See if this one already exists
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Type Members` WHERE `Contact ID` = :contactId AND `Contact Type`=:contactType";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactId" => $contactId,
+            ":contactType" => $contactType
+        ));
+        $result = $sth->fetchAll(PDO::FETCH_OBJ);
+        if(count($result) < 1) {
+            $SQL = "INSERT INTO `FloridaVoterData`.`Contact Types` (`Contact Description`) VALUES (:contactDescription)";
+            $sthInsert = $this->dbh->prepare($SQL);
+            $sthInsert->execute(array(
+                ":contactId" => $contactId,
+                ":contactType" => $contactType
+            ));
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":contactType" => $contactType
+            ));
+            $result = $sth->fetchAll(PDO::FETCH_OBJ);            
+        }        
+        return $result[0];
+    }
+    private function removeContactFromContactType($contactId,$contactType) {
+        $SQL = "DELETE FROM `FloridaVoterData`.`Contact Type Members` WHERE `Contact ID` = :contactId AND `Contact Type`=:contactType";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactId" => $contactId,
+            ":contactType" => $contactType
+        ));
+        return ($sth->rowCount() > 0)?true:false;
     }
     private function getContacts($contactType="") {
         $SQL="SELECT * FROM `FloridaVoterData`.`Contacts`";
