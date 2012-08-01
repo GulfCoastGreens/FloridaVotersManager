@@ -48,6 +48,18 @@
                                 disabled: false
                             }),
                             label: "Create New Contact"
+                        },
+                        contactTypeButton: {
+                            input: $('<span />').append(
+                                    $('<input />')
+                                ).append(
+                                    $('<button />').button({
+                                        text: true,
+                                        label: "Create",
+                                        disabled: false
+                                    })
+                                ),
+                            label: "Create New Contact Type"                            
                         }
                     }
                 },
@@ -319,6 +331,18 @@
                 },
                 success: callback
             });            
+        },
+        addNewContactType: function(description,callback) {
+            $.ajax({
+                title: "Please wait...",
+                data: {
+                    method: "addNewContactType",
+                    params: JSON.stringify({
+                        description: description
+                    })
+                },
+                success: callback
+            });                        
         },
         getContacts: function(contactType,callback) {
             $.ajax({
@@ -713,6 +737,33 @@
                                                         });
                                                     });
                                                 }).change();
+                                            });
+                                            break;
+                                        case "contactTypeButton":
+                                            $(input).data({
+                                                newType: $(input).find('input'),
+                                                create: $(input).find('button')
+                                            })
+                                            .each(function() {
+                                                var newType = $(this).find('input');
+                                                $(this).find('button').click(function() {
+                                                    if($.trim(newType.val()).length < 1) {
+                                                        alert('You must provide a name for the new contact type');
+                                                    } else {
+                                                        self.addNewContactType($.trim(newType.val()),function(contentTypeResponse) {
+                                                            if($.inArray(contentTypeResponse.contactType["Contact Type"],
+                                                                fields.fnx.contactType.input.children().map(function() {
+                                                                    return $(this).val();
+                                                                }).get()) === -1) {
+                                                                fields.fnx.contactType.input.append(
+                                                                    $('<option />').val(contentTypeResponse.contactType["Contact Type"]).html(contentTypeResponse.contactType["Contact Description"])
+                                                                ).val(contentTypeResponse.contactType["Contact Type"]).change();                                                                
+                                                            } else {
+                                                                fields.fnx.contactType.input.val(contentTypeResponse.contactType["Contact Type"]).change();
+                                                            }
+                                                        });
+                                                    }
+                                                });                                                
                                             });
                                             break;
                                         case "contactButton":

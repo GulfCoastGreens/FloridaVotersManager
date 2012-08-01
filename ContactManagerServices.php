@@ -22,6 +22,8 @@ class ContactManagerServices extends Connection {
         parent::__construct();
     }
     public function invokeMethod($params) {
+        $user = $_SERVER['PHP_AUTH_USER'];
+        error_log($user);
         // return $sth->fetchAll(PDO::FETCH_OBJ);        
         ob_start('ob_gzhandler');
         $this->params = $params;
@@ -76,7 +78,6 @@ class ContactManagerServices extends Connection {
                     echo json_encode((object) array('contacts' => $this->getContacts($this->request->contactType)));                    
                     break;
                 case "addNewContact";
-                    error_log("I'm running");
                     echo json_encode((object) array('contact' => $this->addNewContact($this->request->first,$this->request->last,$this->request->nickname,$this->request->contactType)));
                     break;
                 case "addNewContactType":
@@ -91,8 +92,31 @@ class ContactManagerServices extends Connection {
                 case "getContactTypesForContact":
                     echo json_encode((object) array('contactTypes' => $this->getContactTypesForContact($this->request->contactId))); 
                     break;
+                case "getContact":
+                    echo json_encode((object) array('contact' => $this->getContact($this->request->contactId))); 
+                    break;
+                case "getContactUser":
+                    echo json_encode((object) array('user' => $this->getContact($this->request->user))); 
+                    break;
             }
             exit;
+        }
+    }
+    private function getContactUser($user) {
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Users` WHERE `user`=:user";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":user" => $user
+        ));
+        $result = $sth->fetchAll(PDO::FETCH_OBJ);
+        if(count($result) > 0) {
+            if(isset($result[0]->{"Contact ID"})) {
+                $result[0]->{"Contact"} = $this->getContact($result[0]->{"Contact ID"});
+                unset($result[0]->{"Contact ID"});
+            }
+            return $result[0];
+        } else {
+            return (object) array();
         }
     }
     private function addNewContact($first,$last,$nickname,$contactType="") {
@@ -175,6 +199,18 @@ class ContactManagerServices extends Connection {
             ":contactType" => $contactType
         ));
         return ($sth->rowCount() > 0)?true:false;
+    }
+    private function getContact($contactId) {
+        $SQL="SELECT * FROM `FloridaVoterData`.`Contacts` WHERE `Contact ID` = :contact";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactId" => $contactId
+        ));
+        $result = $sth->fetchAll(PDO::FETCH_OBJ);
+        for($i = 0; $i < count($result); ++$i) {
+            $result[$i]->{"Contact Types"} = $this->getContactTypesForContact($result[$i]->{"Contact ID"});
+        }
+        return (count($result) > 0)?$result[0]:null;        
     }
     private function getContacts($contactType="") {
         $SQL="SELECT * FROM `FloridaVoterData`.`Contacts`";
