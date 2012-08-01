@@ -730,9 +730,17 @@
                                                 $(input).change(function() {
                                                     self.getContacts($(this).val(),function(getContactsResponse) {
                                                         fields.fnx.currentContact.input.empty();
-                                                        $.each(getContactsResponse.contacts,function(index,contact) {
+                                                        $.each(getContactsResponse.contacts.sort(function(a,b) {
+                                                            var nameA = [[a["Name Last"],a["Name First"]].join(", "),($.trim(a["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase();
+                                                            var nameB = [[b["Name Last"],b["Name First"]].join(", "),($.trim(b["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase();
+                                                            if (nameA < nameB) //sort string ascending
+                                                                return -1 
+                                                            if (nameA > nameB)
+                                                                return 1
+                                                            return 0 //default return value (no sorting)                                                            
+                                                        }),function(index,contact) {
                                                             fields.fnx.currentContact.input.append(
-                                                                $('<option />').val(contact["Contact ID"]).html([contact["Name Last"],contact["Name First"]].join(', '))
+                                                                $('<option />').val(contact["Contact ID"]).html([[contact["Name Last"],contact["Name First"]].join(', '),($.trim(contact["Nickname"]).length > 0)?" ("+contact["Nickname"]+")":""].join(""))
                                                             );
                                                         });
                                                     });
@@ -895,8 +903,18 @@
                                                             self.addNewContact($(this).data('first').val(),$(this).data('last').val(),$(this).data('nickname').val(),$(this).data('contactTypes').val(),function(addNewContactResponse) {
                                                                 fields.fnx.currentContact.input
                                                                 .append(
-                                                                    $('<option />').val(addNewContactResponse.contact["Contact ID"]).html([addNewContactResponse.contact["Name Last"],addNewContactResponse.contact["Name First"]].join(', '))                                                                    
+                                                                    $('<option />').val(addNewContactResponse.contact["Contact ID"]).html([[addNewContactResponse.contact["Name Last"],addNewContactResponse.contact["Name First"]].join(', '),($.trim(addNewContactResponse["Nickname"]).length > 0)?" ("+addNewContactResponse["Nickname"]+")":""].join(""))                                                                    
                                                                 )
+                                                                .children().sort(function(a,b) {
+                                                                    var nameA = a.html().toLowerCase();
+                                                                    var nameB = b.html().toLowerCase();
+                                                                    if (nameA < nameB) //sort string ascending
+                                                                        return -1 
+                                                                    if (nameA > nameB)
+                                                                        return 1
+                                                                    return 0 //default return value (no sorting)                                                                                                                                
+                                                                })
+                                                                .end()
                                                                 .val(addNewContactResponse.contact["Contact ID"])
                                                                 .change();
                                                                 dialog.dialog('close');
@@ -917,7 +935,23 @@
                                     // contactType
                                 })
                             )
-                        )
+                        ).each(function(index,contactFunctionsTable) {
+                            if(typeof(value.control) === "undefined") {
+                                $(contactFunctionsTable).append(
+                                    $('<td />')
+                                );                                
+                            } else {
+                                $(contactFunctionsTable).append(
+                                    $('<td />')
+                                    .append(
+                                        value.control
+                                        .prop({
+                                            "id": key+"Control"
+                                        })
+                                    )
+                                );                                
+                            }
+                        })
                     )
                 });                    
             });            
