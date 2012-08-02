@@ -60,6 +60,14 @@
                                     })
                                 ),
                             label: "Create New Contact Type"                            
+                        },
+                        addContactToContactType: {
+                            input: $('<select />'),
+                            label: "Add Contact to Contact Type"                            
+                        },
+                        removeContactFromContactType: {
+                            input: $('<select />'),
+                            label: "Remove Contact from Contact Type"                                                        
                         }
                     }
                 },
@@ -792,6 +800,31 @@
                                                 });                                                
                                             });
                                             break;
+//                                        case "addContactToContactType":
+//                                            $(input).click(function() {
+//                                                var input = $(this);
+//                                                input.empty();
+////                                                $.each(fields.fnx.currentContact.input.data["Contact Types"],function(index,contactType) {
+////                                                    input.append(
+////                                                        $('<option />').val(contactType["Contact Type"]).html(contactType["Contact Description"]).data(contactType)
+////                                                    );
+////                                                });
+//                                            }).click();
+//                                            break;
+//                                        case "removeContactFromContactType":
+//                                            $(input).click(function() {
+//                                                var input = $(this),
+//                                                    typeIds = $.map(fields.fnx.currentContact.input.data["Contact Types"],function(type,index) {
+//                                                        return type["Contact Type"];
+//                                                    })
+////                                                input.empty();
+////                                                fields.fnx.contactType.input.children().each(function(index,contactType) {
+////                                                    if($.inArray($(contactType).val(),typeIds) === -1) {
+////                                                        input.append($(contactType).clone())
+////                                                    }
+////                                                });
+//                                            }).click();
+//                                            break;
                                         case "contactButton":
                                             fields.fnx.contactButton.input.click(function() {
                                                 $('<div />')
