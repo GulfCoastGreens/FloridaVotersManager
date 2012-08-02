@@ -155,6 +155,14 @@
                     race: {
                         input: $('<select />'),
                         label: "Race"
+                    },
+                    bornBefore: {
+                        input: $('<input />'),
+                        label: "Born Before"
+                    },
+                    bornAfter: {
+                        input: $('<input />'),
+                        label: "Born After"
                     }
                 },
                 location: {
@@ -545,6 +553,18 @@
                                             select.append(
                                                 $('<option />').html(race["Race Description"]).val(race["Race Code"])
                                             );
+                                        });
+                                        break;
+                                    case "bornBefore":
+                                        $(input).datepicker({
+                                            dateFormat: 'yy-mm-dd',
+                                            showButtonPanel: true 
+                                        });
+                                        break;
+                                    case "bornAfter":
+                                        $(input).datepicker({
+                                            dateFormat: 'yy-mm-dd',
+                                            showButtonPanel: true 
                                         });
                                         break;
                                 }
@@ -1177,6 +1197,8 @@
                         ($.trim(sf.name.lastName.input.val()) == "")?{}:{last: $.trim(sf.name.lastName.input.val())},
                         ($.trim(sf.name.gender.input.val()) == "")?{}:{gender: $.trim(sf.name.gender.input.val())},
                         ($.trim(sf.name.race.input.val()) == "")?{}:{race: $.trim(sf.name.race.input.val())},
+                        ($.trim(sf.name.bornBefore.input.val()) == "")?{}:{bornBefore: $.trim(sf.name.bornBefore.input.val())},
+                        ($.trim(sf.name.bornAfter.input.val()) == "")?{}:{bornAfter: $.trim(sf.name.bornAfter.input.val())},
                         ($.trim(sf.location.county.input.val()) == "")?{}:{county: $.trim(sf.location.county.input.val())},
                         ($.trim(sf.location.address.input.val()) == "")?{}:{address: $.trim(sf.location.address.input.val())},
                         ($.trim(sf.location.city.input.val()) == "")?{}:{city: $.trim(sf.location.city.input.val())},

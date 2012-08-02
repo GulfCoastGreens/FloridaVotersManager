@@ -451,6 +451,14 @@ class ContactManagerServices extends Connection {
                         $prevalues = array_merge($prevalues,array(":".$key => $value));
                         $sqlwhere[] = "(`Race` = :race)";
                         break;
+                    case "bornBefore":
+                        $prevalues = array_merge($prevalues,array(":".$key => $value));
+                        $sqlwhere[] = "(`Birth Date` <= :bornBefore)";
+                        break;
+                    case "bornAfter":
+                        $prevalues = array_merge($prevalues,array(":".$key => $value));
+                        $sqlwhere[] = "(`Birth Date` >= :bornAfter)";
+                        break;
                     case "county":
                         $prevalues = array_merge($prevalues,array(":".$key => $value));
                         $sqlwhere[] = "(`County Code` = :county)";
