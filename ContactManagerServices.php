@@ -104,9 +104,125 @@ class ContactManagerServices extends Connection {
                 case "getContactPhoneNumbers":
                     echo json_encode((object) array('phoneNumbers' => $this->getContactPhoneNumbers($this->request->contactId))); 
                     break;
+                case "addContactEmail":
+                    echo json_encode((object) array('contactEmails' => $this->addContactEmail($this->request->contactId,$this->request->email))); 
+                    break;
+                case "removeContactEmail":
+                    echo json_encode((object) array('contactEmails' => $this->removeContactEmail($this->request->contactId,$this->request->email))); 
+                    break;
+                case "updateContactEmail":
+                    echo json_encode((object) array('contactEmails' => $this->updateContactEmail($this->request->contactId,$this->request->email,$this->request->updateEmail))); 
+                    break;
+                case "addContactPhoneNumber":
+                    echo json_encode((object) array('contactPhoneNumbers' => $this->addContactPhoneNumber($this->request->contactId,$this->request->phone))); 
+                    break;
+                case "removeContactPhoneNumber":
+                    echo json_encode((object) array('contactPhoneNumbers' => $this->removeContactPhoneNumber($this->request->contactId,$this->request->phone))); 
+                    break;
+                case "updateContactPhoneNumber":
+                    echo json_encode((object) array('contactPhoneNumbers' => $this->updateContactPhoneNumber($this->request->contactId,$this->request->phone,$this->request->updatePhone))); 
+                    break;
             }
             exit;
         }
+    }
+    private function updateContactPhoneNumber($contactId,$phone,$updatePhone) {
+        $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
+        $getPhoneNumbers = function($contactPhoneNumber) {
+            return $contactPhoneNumber["Contact Phone"];
+        };
+        if(in_array($phone,array_map($getPhoneNumbers,$contactPhoneNumbers))) {
+            $SQL = "UPDATE `FloridaVoterData`.`Contact Phone` SET `Contact Phone` = :updatePhone WHERE `Contact ID` = :contactId AND `Contact Phone` = :phone";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":phone" => $phone,
+                ":updatePhone" => $updatePhone
+            ));
+            $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
+        }
+        return $contactPhoneNumbers;
+    }
+    private function removeContactPhoneNumber($contactId,$phone) {
+        $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
+        $getPhoneNumbers = function($contactPhoneNumber) {
+            return $contactPhoneNumber["Contact Phone"];
+        };
+        if(in_array($phone,array_map($getPhoneNumbers,$contactPhoneNumbers))) {
+            $SQL = "DELETE FROM `FloridaVoterData`.`Contact Phone` WHERE `Contact ID` = :contactId AND `Contact Phone` = :phone";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":phone" => $phone
+            ));
+            $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
+        }
+        return $contactPhoneNumbers;
+    }
+    private function addContactPhoneNumber($contactId,$phone) {
+        $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
+        $getPhoneNumbers = function($contactPhoneNumber) {
+            return $contactPhoneNumber["Contact Phone"];
+        };
+        if(!in_array($phone,array_map($getPhoneNumbers,$contactPhoneNumbers))) {
+            $SQL = "INSERT INTO `FloridaVoterData`.`Contact Phone` (`Contact ID`,`Contact Phone`) VALUES (:contactId,:phone)";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":phone" => $phone
+            ));
+            $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
+        }
+        return $contactPhoneNumbers;
+    }
+    private function updateContactEmail($contactId,$email,$updateEmail) {
+        $contactEmails = $this->getContactEmails($contactId);
+        $getEmails = function($contactEmail) {
+            return $contactEmail["Contact Email"];
+        };
+        if(in_array($email,array_map($getEmails,$contactEmails))) {
+            $SQL = "UPDATE `FloridaVoterData`.`Contact Email` SET `Contact Email` = :updateEmail WHERE `Contact ID` = :contactId AND `Contact Email` = :email";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":email" => $email,
+                ":updateEmail" => $updateEmail
+            ));
+            $contactEmails = $this->getContactEmails($contactId);
+        }
+        return $contactEmails;
+    }
+    private function removeContactEmail($contactId,$email) {
+        $contactEmails = $this->getContactEmails($contactId);
+        $getEmails = function($contactEmail) {
+            return $contactEmail["Contact Email"];
+        };
+        if(in_array($email,array_map($getEmails,$contactEmails))) {
+            $SQL = "DELETE FROM `FloridaVoterData`.`Contact Email` WHERE `Contact ID` = :contactId AND `Contact Email` = :email";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":email" => $email
+            ));
+            $contactEmails = $this->getContactEmails($contactId);
+        }
+        return $contactEmails;
+    }
+    private function addContactEmail($contactId,$email) {
+        $contactEmails = $this->getContactEmails($contactId);
+        $getEmails = function($contactEmail) {
+            return $contactEmail["Contact Email"];
+        };
+        if(!in_array($email,array_map($getEmails,$contactEmails))) {
+            $SQL = "INSERT INTO `FloridaVoterData`.`Contact Email` (`Contact ID`,`Contact Email`) VALUES (:contactId,:email)";
+            $sth = $this->dbh->prepare($SQL);
+            $sth->execute(array(
+                ":contactId" => $contactId,
+                ":email" => $email
+            ));
+            $contactEmails = $this->getContactEmails($contactId);
+        }
+        return $contactEmails;
     }
     private function getContactEmails($contactId) {
         $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Email` WHERE `Contact ID`=:contactId";
