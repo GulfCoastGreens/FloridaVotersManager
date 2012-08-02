@@ -722,10 +722,12 @@
                                         case "contactType":
                                             self.getContactTypes(function(getContactTypesResponse) {
                                                 $.each(getContactTypesResponse.types.sort(function(a,b) {
-                                                    if(a["Contact Description"].toLowerCase() < b["Contact Description"].toLowerCase()) //sort string ascending
+                                                    var aDesc = a["Contact Description"].toLowerCase(),
+                                                        bDesc = b["Contact Description"].toLowerCase();
+                                                    if(aDesc < bDesc) //sort string ascending
                                                         return -1
-                                                    if(a["Contact Description"].toLowerCase() > b["Contact Description"].toLowerCase())
-                                                        return -1
+                                                    if(aDesc > bDesc)
+                                                        return 1
                                                     return 0; //default return value (no sorting)
                                                 }),function(index,type) {
                                                     $(input)
@@ -737,8 +739,8 @@
                                                     self.getContacts($(this).val(),function(getContactsResponse) {
                                                         fields.fnx.currentContact.input.empty();
                                                         $.each(getContactsResponse.contacts.sort(function(a,b) {
-                                                            var nameA = [[a["Name Last"],a["Name First"]].join(", "),($.trim(a["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase();
-                                                            var nameB = [[b["Name Last"],b["Name First"]].join(", "),($.trim(b["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase();
+                                                            var nameA = [[a["Name Last"],a["Name First"]].join(", "),($.trim(a["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase(),
+                                                                nameB = [[b["Name Last"],b["Name First"]].join(", "),($.trim(b["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase();
                                                             if (nameA < nameB) //sort string ascending
                                                                 return -1 
                                                             if (nameA > nameB)
@@ -772,9 +774,11 @@
                                                                 fields.fnx.contactType.input.append(
                                                                     $('<option />').val(contentTypeResponse.contactType["Contact Type"]).html(contentTypeResponse.contactType["Contact Description"])
                                                                 ).children().sort(function(a,b) {
-                                                                    if (a.html().toLowerCase() < b.html().toLowerCase()) //sort string ascending
+                                                                    var aDesc = a.html().toLowerCase(),
+                                                                        bDesc = b.html().toLowerCase();
+                                                                    if (aDesc < bDesc) //sort string ascending
                                                                         return -1 
-                                                                    if (a.html().toLowerCase() > b.html().toLowerCase())
+                                                                    if (aDesc > bDesc)
                                                                         return 1
                                                                     return 0 //default return value (no sorting)                                                                                                                                                                                                   
                                                                 })
