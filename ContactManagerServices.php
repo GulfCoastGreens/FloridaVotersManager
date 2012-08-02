@@ -98,9 +98,31 @@ class ContactManagerServices extends Connection {
                 case "getContactUser":
                     echo json_encode((object) array('user' => $this->getContact($this->request->user))); 
                     break;
+                case "getContactEmails":
+                    echo json_encode((object) array('emails' => $this->getContactEmails($this->request->contactId))); 
+                    break;
+                case "getContactPhoneNumbers":
+                    echo json_encode((object) array('phoneNumbers' => $this->getContactPhoneNumbers($this->request->contactId))); 
+                    break;
             }
             exit;
         }
+    }
+    private function getContactEmails($contactId) {
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Email` WHERE `Contact ID`=:contactId";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactId" => $contactId
+        ));
+        return $sth->fetchAll(PDO::FETCH_OBJ);        
+    }
+    private function getContactPhoneNumbers($contactId) {
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Phone` WHERE `Contact ID`=:contactId";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactId" => $contactId
+        ));
+        return $sth->fetchAll(PDO::FETCH_OBJ);        
     }
     private function getContactUser($user) {
         $SQL = "SELECT * FROM `FloridaVoterData`.`Contact Users` WHERE `user`=:user";
@@ -209,6 +231,8 @@ class ContactManagerServices extends Connection {
         $result = $sth->fetchAll(PDO::FETCH_OBJ);
         for($i = 0; $i < count($result); ++$i) {
             $result[$i]->{"Contact Types"} = $this->getContactTypesForContact($result[$i]->{"Contact ID"});
+            $result[$i]->{"Contact Phones"} = $this->getContact($result[0]->{"Contact ID"});
+            $result[$i]->{"Contact Emails"} = $this->getContactEmails($result[0]->{"Contact ID"});            
         }
         return (count($result) > 0)?$result[0]:null;        
     }
@@ -221,7 +245,9 @@ class ContactManagerServices extends Connection {
         ($contactType == "")?$sth->execute():$sth->execute(array(":contactType" => $contactType));
         $result = $sth->fetchAll(PDO::FETCH_OBJ);
         for($i = 0; $i < count($result); ++$i) {
-            $result[$i]->{"Contact Types"} = $this->getContactTypesForContact($result[$i]->{"Contact ID"});
+            $result[$i]->{"Contact Types"} = $this->getContactTypesForContact($result[$i]->{"Contact ID"});            
+            $result[$i]->{"Contact Phones"} = $this->getContactPhoneNumbers($result[$i]->{"Contact ID"});
+            $result[$i]->{"Contact Emails"} = $this->getContactEmails($result[$i]->{"Contact ID"});            
         }
         return $result;
     }
