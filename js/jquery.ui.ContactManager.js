@@ -753,9 +753,9 @@
                                                     var aDesc = a["Contact Description"].toLowerCase(),
                                                         bDesc = b["Contact Description"].toLowerCase();
                                                     if(aDesc < bDesc) //sort string ascending
-                                                        return -1
+                                                        return -1;
                                                     if(aDesc > bDesc)
-                                                        return 1
+                                                        return 1;
                                                     return 0; //default return value (no sorting)
                                                 }),function(index,type) {
                                                     $(input)
@@ -770,15 +770,18 @@
                                                             var nameA = [[a["Name Last"],a["Name First"]].join(", "),($.trim(a["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase(),
                                                                 nameB = [[b["Name Last"],b["Name First"]].join(", "),($.trim(b["Nickname"]).length > 0)?" ("+a["Nickname"]+")":""].join("").toLowerCase();
                                                             if (nameA < nameB) //sort string ascending
-                                                                return -1 
+                                                                return -1; 
                                                             if (nameA > nameB)
-                                                                return 1
-                                                            return 0 //default return value (no sorting)                                                            
+                                                                return 1;
+                                                            return 0; //default return value (no sorting)                                                            
                                                         }),function(index,contact) {
                                                             fields.fnx.currentContact.input.append(
                                                                 $('<option />').val(contact["Contact ID"]).html([[contact["Name Last"],contact["Name First"]].join(', '),($.trim(contact["Nickname"]).length > 0)?" ("+contact["Nickname"]+")":""].join("")).data(contact)
                                                             );
                                                         });
+                                                        fields.fnx.currentContact.input.prepend(
+                                                            $('<option />').val("").html("---Select a contact---")
+                                                        );
                                                     });
                                                 }).change();
                                             });
@@ -805,13 +808,14 @@
                                                                     var aDesc = a.html().toLowerCase(),
                                                                         bDesc = b.html().toLowerCase();
                                                                     if (aDesc < bDesc) //sort string ascending
-                                                                        return -1 
+                                                                        return -1; 
                                                                     if (aDesc > bDesc)
-                                                                        return 1
-                                                                    return 0 //default return value (no sorting)                                                                                                                                                                                                   
+                                                                        return 1;
+                                                                    return 0; //default return value (no sorting)                                                                                                                                                                                                   
                                                                 })
                                                                 .end()
-                                                                .val(contentTypeResponse.contactType["Contact Type"]).change();                                                                
+                                                                .val(contentTypeResponse.contactType["Contact Type"])
+                                                                .change();                                                                
                                                             } else {
                                                                 fields.fnx.contactType.input.val(contentTypeResponse.contactType["Contact Type"]).change();
                                                             }
@@ -973,6 +977,9 @@
                                                             var dialog = $(this);
                                                             self.addNewContact($(this).data('first').val(),$(this).data('last').val(),$(this).data('nickname').val(),$(this).data('contactTypes').val(),function(addNewContactResponse) {
                                                                 fields.fnx.currentContact.input
+                                                                .find('option[value=""]')
+                                                                .remove()
+                                                                .end()
                                                                 .append(
                                                                     $('<option />').val(addNewContactResponse.contact["Contact ID"]).html([[addNewContactResponse.contact["Name Last"],addNewContactResponse.contact["Name First"]].join(', '),($.trim(addNewContactResponse["Nickname"]).length > 0)?" ("+addNewContactResponse["Nickname"]+")":""].join(""))                                                                    
                                                                 )
@@ -986,6 +993,9 @@
                                                                     return 0 //default return value (no sorting)                                                                                                                                
                                                                 })
                                                                 .end()
+                                                                .prepend(
+                                                                    $('<option />').val("").html("---Select a contact---")
+                                                                )
                                                                 .val(addNewContactResponse.contact["Contact ID"])
                                                                 .change();
                                                                 dialog.dialog('close');
