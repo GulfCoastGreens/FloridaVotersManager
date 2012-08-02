@@ -732,7 +732,7 @@
                                                 }),function(index,type) {
                                                     $(input)
                                                     .append(
-                                                        $('<option />').val(type["Contact Type"]).html(type["Contact Description"])
+                                                        $('<option />').val(type["Contact Type"]).html(type["Contact Description"]).data(type)
                                                     );
                                                 });
                                                 $(input).change(function() {
@@ -748,7 +748,7 @@
                                                             return 0 //default return value (no sorting)                                                            
                                                         }),function(index,contact) {
                                                             fields.fnx.currentContact.input.append(
-                                                                $('<option />').val(contact["Contact ID"]).html([[contact["Name Last"],contact["Name First"]].join(', '),($.trim(contact["Nickname"]).length > 0)?" ("+contact["Nickname"]+")":""].join(""))
+                                                                $('<option />').val(contact["Contact ID"]).html([[contact["Name Last"],contact["Name First"]].join(', '),($.trim(contact["Nickname"]).length > 0)?" ("+contact["Nickname"]+")":""].join("")).data(contact)
                                                             );
                                                         });
                                                     });
@@ -772,7 +772,7 @@
                                                                     return $(this).val();
                                                                 }).get()) === -1) {
                                                                 fields.fnx.contactType.input.append(
-                                                                    $('<option />').val(contentTypeResponse.contactType["Contact Type"]).html(contentTypeResponse.contactType["Contact Description"])
+                                                                    $('<option />').val(contentTypeResponse.contactType["Contact Type"]).html(contentTypeResponse.contactType["Contact Description"]).data(contentTypeResponse.contactType)
                                                                 ).children().sort(function(a,b) {
                                                                     var aDesc = a.html().toLowerCase(),
                                                                         bDesc = b.html().toLowerCase();
