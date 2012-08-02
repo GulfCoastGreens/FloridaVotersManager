@@ -219,7 +219,7 @@
             var self = this,
             o = self.options,
             el = self.element,
-            vt = $(self.ContactManager = $('<div />',{ 'id': 'ContactManager' })).appendTo(el);
+            vt = $(self.ContactManager = $('<div />',{'id': 'ContactManager'})).appendTo(el);
             o.ajaxWait.dialog({
                 autoOpen : false,
                 resizable: false,
@@ -721,7 +721,13 @@
                                     switch(key) {
                                         case "contactType":
                                             self.getContactTypes(function(getContactTypesResponse) {
-                                                $.each(getContactTypesResponse.types,function(index,type) {
+                                                $.each(getContactTypesResponse.types.sort(function(a,b) {
+                                                    if(a["Contact Description"].toLowerCase() < b["Contact Description"].toLowerCase()) //sort string ascending
+                                                        return -1
+                                                    if(a["Contact Description"].toLowerCase() > b["Contact Description"].toLowerCase())
+                                                        return -1
+                                                    return 0; //default return value (no sorting)
+                                                }),function(index,type) {
                                                     $(input)
                                                     .append(
                                                         $('<option />').val(type["Contact Type"]).html(type["Contact Description"])
@@ -765,7 +771,15 @@
                                                                 }).get()) === -1) {
                                                                 fields.fnx.contactType.input.append(
                                                                     $('<option />').val(contentTypeResponse.contactType["Contact Type"]).html(contentTypeResponse.contactType["Contact Description"])
-                                                                ).val(contentTypeResponse.contactType["Contact Type"]).change();                                                                
+                                                                ).children().sort(function(a,b) {
+                                                                    if (a.html().toLowerCase() < b.html().toLowerCase()) //sort string ascending
+                                                                        return -1 
+                                                                    if (a.html().toLowerCase() > b.html().toLowerCase())
+                                                                        return 1
+                                                                    return 0 //default return value (no sorting)                                                                                                                                                                                                   
+                                                                })
+                                                                .end()
+                                                                .val(contentTypeResponse.contactType["Contact Type"]).change();                                                                
                                                             } else {
                                                                 fields.fnx.contactType.input.val(contentTypeResponse.contactType["Contact Type"]).change();
                                                             }
@@ -1099,7 +1113,7 @@
                         .width("99%")
                         .dataTable({
                             "aoColumns": $.merge([
-                                { "sTitle": "Reserved for Later&nbsp;","sClass": "NestedRuleChainJobColumn","bVisible": true,"mDataProp": null,"sDefaultContent":"" }                                
+                                {"sTitle": "Reserved for Later&nbsp;","sClass": "NestedRuleChainJobColumn","bVisible": true,"mDataProp": null,"sDefaultContent":""}                                
                             ],$.map(self.searchOptions.voterColumns,function(column,index) {
                                 return {
                                     "sTitle": column.Field,
@@ -1121,26 +1135,26 @@
                 });
                 sf.searchButton.click(function() {
                     var searchCriteria = $.extend({},
-                        ($.trim(sf.name.firstName.input.val()) == "")?{}:{ first: $.trim(sf.name.firstName.input.val()) },
-                        ($.trim(sf.name.middleName.input.val()) == "")?{}:{ middle: $.trim(sf.name.middleName.input.val()) },
-                        ($.trim(sf.name.lastName.input.val()) == "")?{}:{ last: $.trim(sf.name.lastName.input.val()) },
-                        ($.trim(sf.name.gender.input.val()) == "")?{}:{ gender: $.trim(sf.name.gender.input.val()) },
-                        ($.trim(sf.name.race.input.val()) == "")?{}:{ race: $.trim(sf.name.race.input.val()) },
-                        ($.trim(sf.location.county.input.val()) == "")?{}:{ county: $.trim(sf.location.county.input.val()) },
-                        ($.trim(sf.location.address.input.val()) == "")?{}:{ address: $.trim(sf.location.address.input.val()) },
-                        ($.trim(sf.location.city.input.val()) == "")?{}:{ city: $.trim(sf.location.city.input.val()) },
-                        ($.trim(sf.location.zip.input.val()) == "")?{}:{ zip: $.trim(sf.location.zip.input.val()) },
-                        ($.trim(sf.registration.party.input.val()) == "")?{}:{ party: $.trim(sf.registration.party.input.val()) },
-                        ($.trim(sf.registration.status.input.val()) == "")?{}:{ status: $.trim(sf.registration.status.input.val()) },
-                        ($.trim(sf.registration.congressionalDistrict.input.val()) == "")?{}:{ congressionalDistrict: $.trim(sf.registration.congressionalDistrict.input.val()) },
-                        ($.trim(sf.registration.houseDistrict.input.val()) == "")?{}:{ houseDistrict: $.trim(sf.registration.houseDistrict.input.val()) },
-                        ($.trim(sf.registration.senateDistrict.input.val()) == "")?{}:{ senateDistrict: $.trim(sf.registration.senateDistrict.input.val()) },
-                        ($.trim(sf.registration.countyCommissionDistrict.input.val()) == "")?{}:{ countyCommissionDistrict: $.trim(sf.registration.countyCommissionDistrict.input.val()) },
-                        ($.trim(sf.registration.schoolBoardDistrict.input.val()) == "")?{}:{ schoolBoardDistrict: $.trim(sf.registration.schoolBoardDistrict.input.val()) },
-                        ($.trim(sf.registration.precinct.input.val()) == "")?{}:{ precinct: $.trim(sf.registration.precinct.input.val()) },
-                        ($.trim(sf.registration.precinctGroup.input.val()) == "")?{}:{ precinctGroup: $.trim(sf.registration.precinctGroup.input.val()) },
-                        ($.trim(sf.registration.precinctSplit.input.val()) == "")?{}:{ precinctSplit: $.trim(sf.registration.precinctSplit.input.val()) },
-                        ($.trim(sf.registration.precinctSuffix.input.val()) == "")?{}:{ precinctSuffix: $.trim(sf.registration.precinctSuffix.input.val()) }
+                        ($.trim(sf.name.firstName.input.val()) == "")?{}:{first: $.trim(sf.name.firstName.input.val())},
+                        ($.trim(sf.name.middleName.input.val()) == "")?{}:{middle: $.trim(sf.name.middleName.input.val())},
+                        ($.trim(sf.name.lastName.input.val()) == "")?{}:{last: $.trim(sf.name.lastName.input.val())},
+                        ($.trim(sf.name.gender.input.val()) == "")?{}:{gender: $.trim(sf.name.gender.input.val())},
+                        ($.trim(sf.name.race.input.val()) == "")?{}:{race: $.trim(sf.name.race.input.val())},
+                        ($.trim(sf.location.county.input.val()) == "")?{}:{county: $.trim(sf.location.county.input.val())},
+                        ($.trim(sf.location.address.input.val()) == "")?{}:{address: $.trim(sf.location.address.input.val())},
+                        ($.trim(sf.location.city.input.val()) == "")?{}:{city: $.trim(sf.location.city.input.val())},
+                        ($.trim(sf.location.zip.input.val()) == "")?{}:{zip: $.trim(sf.location.zip.input.val())},
+                        ($.trim(sf.registration.party.input.val()) == "")?{}:{party: $.trim(sf.registration.party.input.val())},
+                        ($.trim(sf.registration.status.input.val()) == "")?{}:{status: $.trim(sf.registration.status.input.val())},
+                        ($.trim(sf.registration.congressionalDistrict.input.val()) == "")?{}:{congressionalDistrict: $.trim(sf.registration.congressionalDistrict.input.val())},
+                        ($.trim(sf.registration.houseDistrict.input.val()) == "")?{}:{houseDistrict: $.trim(sf.registration.houseDistrict.input.val())},
+                        ($.trim(sf.registration.senateDistrict.input.val()) == "")?{}:{senateDistrict: $.trim(sf.registration.senateDistrict.input.val())},
+                        ($.trim(sf.registration.countyCommissionDistrict.input.val()) == "")?{}:{countyCommissionDistrict: $.trim(sf.registration.countyCommissionDistrict.input.val())},
+                        ($.trim(sf.registration.schoolBoardDistrict.input.val()) == "")?{}:{schoolBoardDistrict: $.trim(sf.registration.schoolBoardDistrict.input.val())},
+                        ($.trim(sf.registration.precinct.input.val()) == "")?{}:{precinct: $.trim(sf.registration.precinct.input.val())},
+                        ($.trim(sf.registration.precinctGroup.input.val()) == "")?{}:{precinctGroup: $.trim(sf.registration.precinctGroup.input.val())},
+                        ($.trim(sf.registration.precinctSplit.input.val()) == "")?{}:{precinctSplit: $.trim(sf.registration.precinctSplit.input.val())},
+                        ($.trim(sf.registration.precinctSuffix.input.val()) == "")?{}:{precinctSuffix: $.trim(sf.registration.precinctSuffix.input.val())}
                     );
                     // conditions
                     self.getSearchRows(searchCriteria,function(getSearchRowsResult) {
