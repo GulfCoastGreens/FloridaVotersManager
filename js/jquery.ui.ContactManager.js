@@ -372,6 +372,18 @@
                 success: callback
             });            
         },
+        getContact: function(contactId,callback) {
+            $.ajax({
+                title: "Please wait...",
+                data: {
+                    method: "getContact",
+                    params: JSON.stringify({
+                        contactId: contactId
+                    })
+                },
+                success: callback
+            });            
+        },
         getSearchRows: function(conditions,callback) {
             if($.isEmptyObject(conditions)) {
                 alert("ERROR! You must specify a minimum of one criteria!");
@@ -746,7 +758,24 @@
                                     "id": key
                                 })
                                 .each(function(index,input) {
+                                    console.log('Key is '+key);
                                     switch(key) {
+                                        case "currentContact":
+                                            console.log('Key found '+key);
+                                            $(input).change(function() {
+                                                var input = $(this);
+                                                if(input.val() === "") {
+                                                    // Clear contact data
+                                                } else {
+                                                    console.log('Retrieving data for '+key);
+                                                    // Retrieve contact info
+                                                    self.getContact(input.val(),function(currentContactResponse) {
+                                                        input.find(':selected').data(currentContactResponse.contact);
+                                                        
+                                                    });
+                                                }
+                                            });
+                                            break;
                                         case "contactType":
                                             self.getContactTypes(function(getContactTypesResponse) {
                                                 $.each(getContactTypesResponse.types.sort(function(a,b) {

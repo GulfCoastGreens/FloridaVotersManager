@@ -342,7 +342,7 @@ class ContactManagerServices extends Connection {
         return ($sth->rowCount() > 0)?true:false;
     }
     private function getContact($contactId) {
-        $SQL="SELECT * FROM `FloridaVoterData`.`Contacts` WHERE `Contact ID` = :contact";
+        $SQL="SELECT * FROM `FloridaVoterData`.`Contacts` WHERE `Contact ID` = :contactId";
         $sth = $this->dbh->prepare($SQL);
         $sth->execute(array(
             ":contactId" => $contactId
@@ -350,8 +350,8 @@ class ContactManagerServices extends Connection {
         $result = $sth->fetchAll(PDO::FETCH_OBJ);
         for($i = 0; $i < count($result); ++$i) {
             $result[$i]->{"Contact Types"} = $this->getContactTypesForContact($result[$i]->{"Contact ID"});
-            $result[$i]->{"Contact Phones"} = $this->getContact($result[0]->{"Contact ID"});
-            $result[$i]->{"Contact Emails"} = $this->getContactEmails($result[0]->{"Contact ID"});            
+            $result[$i]->{"Contact Phones"} = $this->getContactPhoneNumbers($result[$i]->{"Contact ID"});
+            $result[$i]->{"Contact Emails"} = $this->getContactEmails($result[$i]->{"Contact ID"});            
         }
         return (count($result) > 0)?$result[0]:null;        
     }
