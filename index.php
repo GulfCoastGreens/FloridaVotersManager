@@ -24,7 +24,7 @@
             google.load("maps", "2");
         </script>
             
-        <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.8.2/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.8.2/jquery.dataTables.min.js"></script>
         <script type='text/javascript' src='js/jquery.ui.ContactManager.js'></script>
         <script language='javascript'>
             google.setOnLoadCallback(function() {

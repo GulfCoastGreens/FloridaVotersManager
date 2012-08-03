@@ -128,6 +128,11 @@
                     label: "Find Matching Voters",
                     disabled: false
                 }),
+                searchExportButton: $('<button />').button({
+                    text: true,
+                    label: "Export Voters",
+                    disabled: false
+                }),
                 searchFieldset: $('<fieldset />')
                     .addClass('ui-widget-content')
                     .append(
@@ -444,7 +449,7 @@
                             })
                         )
                     )
-                )
+                );
             });
             return sf.searchRegistrationTable;            
         },
@@ -497,7 +502,7 @@
                             })
                         )
                     )
-                )
+                );
             });
             return sf.searchLocationTable;            
         },
@@ -571,7 +576,7 @@
                             })
                         )
                     )
-                )
+                );
             });
             return sf.searchNameTable;
         },
@@ -615,7 +620,7 @@
                                 })
                             )
                         )
-                    )
+                    );
                 });                    
             });
         },
@@ -659,7 +664,7 @@
                                 })
                             )
                         )
-                    )
+                    );
                 });                    
             });
         },
@@ -703,7 +708,7 @@
                                 })
                             )
                         )
-                    )
+                    );
                 });                    
             });
         },
@@ -987,10 +992,10 @@
                                                                     var nameA = a.html().toLowerCase();
                                                                     var nameB = b.html().toLowerCase();
                                                                     if (nameA < nameB) //sort string ascending
-                                                                        return -1 
+                                                                        return -1; 
                                                                     if (nameA > nameB)
-                                                                        return 1
-                                                                    return 0 //default return value (no sorting)                                                                                                                                
+                                                                        return 1;
+                                                                    return 0; //default return value (no sorting)                                                                                                                                
                                                                 })
                                                                 .end()
                                                                 .prepend(
@@ -1033,7 +1038,7 @@
                                 );                                
                             }
                         })
-                    )
+                    );
                 });                    
             });            
         },
@@ -1141,6 +1146,7 @@
                                     "vertical-align": "top"
                                 })
                                 .append(sf.searchButton)
+                                .append(sf.searchExportButton)
                             )
                         )
                     )
@@ -1188,7 +1194,7 @@
                                     "bVisible": true,
                                     "mDataProp": column.Field,
                                     "sDefaultContent": ""
-                                }
+                                };
                             })),
                             "sScrollX": "100%",
                             "bStateSave": true,
@@ -1231,7 +1237,18 @@
                         sr.searchResultDataTable.fnAddData(getSearchRowsResult.rows);
                     });
                 });
-
+                sf.searchExportButton.click(function() {
+                    $('<form />',{
+                        "action": "post"
+                    }).submit({
+                        "method": "exportSource",
+                        "params": JSON.stringify({ 
+                            data: sr.searchResultDataTable.fnGetData() 
+                        })
+                    },function() {
+                        $(this).remove();
+                    });
+                });
 
             });
             
