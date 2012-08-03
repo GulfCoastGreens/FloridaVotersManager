@@ -128,11 +128,6 @@
                     label: "Find Matching Voters",
                     disabled: false
                 }),
-                searchExportButton: $('<button />').button({
-                    text: true,
-                    label: "Export Voters",
-                    disabled: false
-                }),
                 searchFieldset: $('<fieldset />')
                     .addClass('ui-widget-content')
                     .append(
@@ -1146,7 +1141,6 @@
                                     "vertical-align": "top"
                                 })
                                 .append(sf.searchButton)
-                                .append(sf.searchExportButton)
                             )
                         )
                     )
@@ -1185,6 +1179,18 @@
                     searchResultDataTable: sr.searchResultTable
                         .width("99%")
                         .dataTable({
+                            "sDom": '<"H"Tfr>t<"F"ip>',
+                            "oTableTools": {
+                                "sSwfPath": "js/TableTools-2.1.2/media/swf/copy_csv_xls_pdf.swf",
+                                "aButtons": [
+                                        "copy", "csv", "xls", "pdf",
+                                        {
+                                                "sExtends":    "collection",
+                                                "sButtonText": "Save",
+                                                "aButtons":    [ "csv", "xls", "pdf" ]
+                                        }
+                                ]                                
+                            },                            
                             "aoColumns": $.merge([
                                 {"sTitle": "Reserved for Later&nbsp;","sClass": "NestedRuleChainJobColumn","bVisible": true,"mDataProp": null,"sDefaultContent":""}                                
                             ],$.map(self.searchOptions.voterColumns,function(column,index) {
@@ -1237,19 +1243,6 @@
                         sr.searchResultDataTable.fnAddData(getSearchRowsResult.rows);
                     });
                 });
-                sf.searchExportButton.click(function() {
-                    $('<form />',{
-                        "action": "post"
-                    }).submit({
-                        "method": "exportSource",
-                        "params": JSON.stringify({ 
-                            data: sr.searchResultDataTable.fnGetData() 
-                        })
-                    },function() {
-                        $(this).remove();
-                    });
-                });
-
             });
             
         },

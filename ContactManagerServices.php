@@ -34,12 +34,7 @@ class ContactManagerServices extends Connection {
             } else {
                 error_log("NO PARAMETERS");
             }
-            if($this->params["method"] == "exportSearch") {
-                header('Content-Type: application/force-download');
-                header('Content-disposition: attachment; filename=export.csv');                
-            } else {
-                header('Content-type: application/json');
-            }
+            header('Content-type: application/json');
             switch($this->params["method"]) {
                 case "someMethod":
                     echo json_encode((object) array('status' => $this->showDatabases()));
@@ -127,31 +122,12 @@ class ContactManagerServices extends Connection {
                 case "updateContactPhoneNumber":
                     echo json_encode((object) array('contactPhoneNumbers' => $this->updateContactPhoneNumber($this->request->contactId,$this->request->phone,$this->request->updatePhone))); 
                     break;
-                case "exportSearch":
-                    print $this->exportSearch($this->request->data);
+                default:
+                    print "Not Matched";
                     break;
             }
             exit;
         }
-    }
-    private function exportSearch($data) {
-        $result = array();
-        $line = array();
-        foreach($data[0] as $key => $value) {
-            $line[] = "\"".$key."\"";
-        }
-        $result[] = implode(",",$line);
-        
-        $makeCSV = function($row) {
-            $line = array();
-            $line = "";
-            foreach($row as $key => $value) {
-                $line[] = "\"".$value."\"";
-            }
-            return implode(",",$line);
-        };
-        $result[] = array_map($makeCSV,$data);
-        return implode("\n",$result);
     }
     private function updateContactPhoneNumber($contactId,$phone,$updatePhone) {
         $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
