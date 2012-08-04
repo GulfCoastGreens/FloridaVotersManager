@@ -1140,8 +1140,8 @@
                                                 case "addContactToContactType":
                                                     // $(control).button("option","disabled",false);
                                                     // fields.fnx.addContactToContactType.control.button("option","disabled",false);
-                                                    $(control).click(function() {
-                                                        self.addContactToContactType(fields.fnx.currentContact.input.val(),$(this).val(),function(addContactToContactTypeResponse) {
+                                                    $(control).click(function() {                                                        
+                                                        self.addContactToContactType(fields.fnx.currentContact.input.val(),fields.fnx.addContactToContactType.input.val(),function(addContactToContactTypeResponse) {
                                                             fields.fnx.currentContact.input.change();
                                                         });
                                                         // alert("add selected contact type");                                                        
@@ -1150,8 +1150,8 @@
                                                 case "removeContactFromContactType":
                                                     // $(control).button("option","disabled",false);
                                                     // fields.fnx.removeContactFromContactType.control.button("option","disabled",false);
-                                                    $(control).click(function() {
-                                                        self.removeContactFromContactType(fields.fnx.currentContact.input.val(),$(this).val(),function(addContactToContactTypeResponse) {
+                                                    $(control).click(function() {                                                        
+                                                        self.removeContactFromContactType(fields.fnx.currentContact.input.val(),fields.fnx.removeContactFromContactType.input.val(),function(addContactToContactTypeResponse) {
                                                             fields.fnx.currentContact.input.change();
                                                         });
                                                         // alert("remove selected contact type");                                                        
