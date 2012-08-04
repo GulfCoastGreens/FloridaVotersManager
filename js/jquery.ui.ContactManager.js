@@ -9,6 +9,17 @@
                     label: "Contacts"
                 }
             },
+            contactTabs: {
+                administrate: {
+                    label: "Administrate Contacts"
+                },
+                update: {
+                    label: "Update Existing Contacts"
+                },
+                campaign: {
+                    label: "Campaign Contacts"
+                }
+            },
             ajaxWait: $('<div />')
                 .addClass('ui-state-default ui-widget-content')
                 .append(
@@ -313,12 +324,12 @@
                 vt.append(o.tabs[key].content);
                 switch(key) {
                     case "search":
+                        
                         self.searchForm(o.tabs[key].content);
                         
                         break;
                     case "contact":
-                        self.contactForm(o.tabs[key].content);
-                        
+                        self.contactForm(o.tabs[key].content);                        
                         break;
                 }
                 
@@ -1230,20 +1241,53 @@
                     .addClass('ui-state-default ui-widget-header ui-corner-all')
                 )
                 .append(
-                    $('<table />')
-                    .append(
-                        $('<tbody />')
-                        .append(
-                            $('<tr />')
-                            .append(
-                                $('<td />')
-                                .css({
-                                    "vertical-align": "top"
-                                })
-                                .append(self.buildContactFunctionsTable())
-                            )
-                        )
-                    )
+                    $('<div />')
+                    .each(function(index,div) {
+                        var rct = $(self.rootContactTab = $('<ul />')).appendTo($(div));
+                        $.each(o.contactTabs,function(contactKey,contactObj) {
+                            $.extend(o.contactTabs[contactKey],{
+                                item: $('<li />',{
+                                        "id": "#"+contactKey
+                                    })
+                                    .append(
+                                        $('<a />',{
+                                            'href': "#"+contactKey
+                                        })
+                                        .append(contactObj.label)
+                                    ),
+                                content: $('<div />',{
+                                        "id": contactKey
+                                    })
+                            });
+                            rct.append(o.contactTabs[contactKey].item);
+                            $(div).append(o.contactTabs[contactKey].content);
+                            switch(contactKey) {
+                                case "update":
+                                    break;
+                                case "campaign":
+                                    break;
+                                case "administrate":
+                                    o.contactTabs[contactKey].content
+                                    .append(
+                                        $('<table />')
+                                        .append(
+                                            $('<tbody />')
+                                            .append(
+                                                $('<tr />')
+                                                .append(
+                                                    $('<td />')
+                                                    .css({
+                                                        "vertical-align": "top"
+                                                    })
+                                                    .append(self.buildContactFunctionsTable())
+                                                )
+                                            )
+                                        )
+                                    );
+                                    break;
+                            }
+                        });                        
+                    }).tabs()
                 )
             );    
         },
