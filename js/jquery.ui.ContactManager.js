@@ -768,7 +768,7 @@
                 $('<tr />')
                 .append(
                     $('<th />',{
-                        "colspan": "2"
+                        "colspan": "3"
                     })
                     .html("Contact Administration Functions")
                     .addClass('ui-state-default ui-widget-header ui-corner-all')
