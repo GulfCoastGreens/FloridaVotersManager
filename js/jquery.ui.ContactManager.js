@@ -63,11 +63,21 @@
                         },
                         addContactToContactType: {
                             input: $('<select />'),
-                            label: "Add Contact to Contact Type"                            
+                            label: "Add Contact to Contact Type",
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Add",
+                                    disabled: true
+                                })
                         },
                         removeContactFromContactType: {
                             input: $('<select />'),
-                            label: "Remove Contact from Contact Type"                                                        
+                            label: "Remove Contact from Contact Type",                                                        
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Remove",
+                                    disabled: true
+                                })
                         }
                     }
                 },
@@ -366,6 +376,32 @@
                 data: {
                     method: "getContacts",
                     params: JSON.stringify({
+                        contactType: contactType
+                    })
+                },
+                success: callback
+            });            
+        },
+        addContactToContactType: function(contactId,contactType,callback) {
+            $.ajax({
+                title: "Please wait...",
+                data: {
+                    method: "addContactToContactType",
+                    params: JSON.stringify({
+                        contactId: contactId,
+                        contactType: contactType
+                    })
+                },
+                success: callback
+            });            
+        },
+        removeContactFromContactType: function(contactId,contactType,callback) {
+            $.ajax({
+                title: "Please wait...",
+                data: {
+                    method: "removeContactFromContactType",
+                    params: JSON.stringify({
+                        contactId: contactId,
                         contactType: contactType
                     })
                 },
@@ -766,11 +802,52 @@
                                                 var input = $(this);
                                                 if(input.val() === "") {
                                                     // Clear contact data
+                                                    fields.fnx.addContactToContactType.input.empty();
+                                                    fields.fnx.removeContactFromContactType.input.empty();
+                                                    fields.fnx.addContactToContactType.control.button("option","disabled",true);
+                                                    fields.fnx.removeContactFromContactType.control.button("option","disabled",true);
                                                 } else {
                                                     console.log('Retrieving data for '+key);
                                                     // Retrieve contact info
                                                     self.getContact(input.val(),function(currentContactResponse) {
                                                         input.find(':selected').data(currentContactResponse.contact);
+                                                        fields.fnx.removeContactFromContactType.input.empty().each(function(index,input) {
+                                                            $.each(currentContactResponse.contact["Contact Types"].sort(function(a,b) {
+                                                                var aDesc = a["Contact Description"].toLowerCase(),
+                                                                    bDesc = b["Contact Description"].toLowerCase();
+                                                                if(aDesc < bDesc) //sort string ascending
+                                                                    return -1;
+                                                                if(aDesc > bDesc)
+                                                                    return 1;
+                                                                return 0; //default return value (no sorting)
+                                                            }),function(index,type) {
+                                                                $(input)
+                                                                .append(
+                                                                    $('<option />').val(type["Contact Type"]).html(type["Contact Description"]).data(type)
+                                                                );
+                                                            });
+                                                            var types = $(input).children().map(function(option,index) {
+                                                                return $(option).val();
+                                                            }).get();
+                                                            fields.fnx.addContactToContactType.input.empty();
+                                                            fields.fnx.contactType.input.children().each(function(index,option) {
+                                                                if($(option).val() !== "") {
+                                                                    if($.inArray($(option).val(),types) === -1) {
+                                                                        fields.fnx.addContactToContactType.input.append($(option).clone());
+                                                                    }                                                                    
+                                                                }
+                                                            });
+                                                            fields.fnx.addContactToContactType.control.button(
+                                                                "option",
+                                                                "disabled",
+                                                                (fields.fnx.addContactToContactType.input.children().length < 1)
+                                                            );
+                                                            fields.fnx.removeContactFromContactType.control.button(
+                                                                "option",
+                                                                "disabled",
+                                                                (fields.fnx.removeContactFromContactType.input.children().length < 1)
+                                                            );
+                                                        });
                                                         
                                                     });
                                                 }
@@ -853,7 +930,7 @@
                                                 });                                                
                                             });
                                             break;
-//                                        case "addContactToContactType":
+                                        case "addContactToContactType":
 //                                            $(input).click(function() {
 //                                                var input = $(this);
 //                                                input.empty();
@@ -863,8 +940,8 @@
 ////                                                    );
 ////                                                });
 //                                            }).click();
-//                                            break;
-//                                        case "removeContactFromContactType":
+                                            break;
+                                        case "removeContactFromContactType":
 //                                            $(input).click(function() {
 //                                                var input = $(this),
 //                                                    typeIds = $.map(fields.fnx.currentContact.input.data["Contact Types"],function(type,index) {
@@ -877,7 +954,7 @@
 ////                                                    }
 ////                                                });
 //                                            }).click();
-//                                            break;
+                                            break;
                                         case "contactButton":
                                             fields.fnx.contactButton.input.click(function() {
                                                 $('<div />')
@@ -1057,6 +1134,30 @@
                                         value.control
                                         .prop({
                                             "id": key+"Control"
+                                        })
+                                        .each(function(index,control) {
+                                            switch(key) {
+                                                case "addContactToContactType":
+                                                    // $(control).button("option","disabled",false);
+                                                    // fields.fnx.addContactToContactType.control.button("option","disabled",false);
+                                                    $(control).click(function() {
+                                                        self.addContactToContactType(fields.fnx.currentContact.input.val(),$(this).val(),function(addContactToContactTypeResponse) {
+                                                            fields.fnx.currentContact.input.change();
+                                                        });
+                                                        // alert("add selected contact type");                                                        
+                                                    });
+                                                    break;
+                                                case "removeContactFromContactType":
+                                                    // $(control).button("option","disabled",false);
+                                                    // fields.fnx.removeContactFromContactType.control.button("option","disabled",false);
+                                                    $(control).click(function() {
+                                                        self.removeContactFromContactType(fields.fnx.currentContact.input.val(),$(this).val(),function(addContactToContactTypeResponse) {
+                                                            fields.fnx.currentContact.input.change();
+                                                        });
+                                                        // alert("remove selected contact type");                                                        
+                                                    });
+                                                    break;
+                                            }
                                         })
                                     )
                                 );                                
