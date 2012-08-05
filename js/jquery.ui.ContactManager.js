@@ -89,6 +89,15 @@
                                     label: "Remove",
                                     disabled: true
                                 })
+                        },
+                        voterID: {
+                            input: $('<input />'),
+                            label: "Update Contact Voter ID",
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Set Voter ID",
+                                    disabled: false
+                                })
                         }
                     }
                 },
@@ -430,6 +439,31 @@
                 },
                 success: callback
             });            
+        },
+        getVoterInfo: function(voterId,callback) {
+            $.ajax({
+                title: "Searching for matching voters",
+                data: {
+                    method: "getVoterInfo",
+                    params: JSON.stringify({
+                        voterId: voterId
+                    })
+                },
+                success: callback
+            });                        
+        },
+        updateContactVoterID: function(contactId,voterId,callback) {
+            $.ajax({
+                title: "Updating Contact Voter ID",
+                data: {
+                    method: "updateContactVoterID",
+                    params: JSON.stringify({
+                        voterId: voterId,
+                        contactId: contactId
+                    })
+                },
+                success: callback
+            });                        
         },
         getSearchRows: function(conditions,callback) {
             if($.isEmptyObject(conditions)) {
@@ -817,12 +851,15 @@
                                                     fields.fnx.removeContactFromContactType.input.empty();
                                                     fields.fnx.addContactToContactType.control.button("option","disabled",true);
                                                     fields.fnx.removeContactFromContactType.control.button("option","disabled",true);
+                                                    fields.fnx.voterID.control.button("option","disabled",true);
+                                                    fields.fnx.voterID.input.val("");
                                                 } else {
                                                     console.log('Retrieving data for '+key);
                                                     // Retrieve contact info
                                                     self.getContact(input.val(),function(currentContactResponse) {
                                                         input.find(':selected').data(currentContactResponse.contact);
                                                         fields.fnx.removeContactFromContactType.input.empty().each(function(index,input) {
+                                                            fields.fnx.voterID.input.val(currentContactResponse.contact["Voter ID"]);
                                                             $.each(currentContactResponse.contact["Contact Types"].sort(function(a,b) {
                                                                 var aDesc = a["Contact Description"].toLowerCase(),
                                                                     bDesc = b["Contact Description"].toLowerCase();
@@ -858,10 +895,10 @@
                                                                 "disabled",
                                                                 (fields.fnx.removeContactFromContactType.input.children().length < 1)
                                                             );
+                                                            fields.fnx.voterID.control.button("option","disabled",false);
                                                         });
-                                                        
-                                                    });
-                                                }
+                                                    });                                                            
+                                                }                                                        
                                             });
                                             break;
                                         case "contactType":
@@ -899,6 +936,12 @@
                                                         fields.fnx.currentContact.input.prepend(
                                                             $('<option />').val("").html("---Select a contact---")
                                                         );
+                                                        fields.fnx.addContactToContactType.input.empty();
+                                                        fields.fnx.removeContactFromContactType.input.empty();
+                                                        fields.fnx.addContactToContactType.control.button("option","disabled",true);
+                                                        fields.fnx.removeContactFromContactType.control.button("option","disabled",true);
+                                                        fields.fnx.voterID.control.button("option","disabled",true);
+                                                        fields.fnx.voterID.input.val("");
                                                     });
                                                 }).change();
                                             });
@@ -1166,6 +1209,13 @@
                                                             fields.fnx.currentContact.input.change();
                                                         });
                                                         // alert("remove selected contact type");                                                        
+                                                    });
+                                                    break;
+                                                case "voterID":
+                                                    $(control).click(function() {
+                                                        self.updateContactVoterID(fields.fnx.currentContact.input.val(),fields.fnx.voterID.input.val(),function(updateContactVoterIDResponse) {
+                                                            fields.fnx.currentContact.input.change();
+                                                        });
                                                     });
                                                     break;
                                             }

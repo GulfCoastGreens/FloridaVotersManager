@@ -96,7 +96,7 @@ class ContactManagerServices extends Connection {
                     echo json_encode((object) array('contact' => $this->getContact($this->request->contactId))); 
                     break;
                 case "getContactUser":
-                    echo json_encode((object) array('user' => $this->getContact($this->request->user))); 
+                    echo json_encode((object) array('user' => $this->getContactUser($this->request->user))); 
                     break;
                 case "getContactEmails":
                     echo json_encode((object) array('emails' => $this->getContactEmails($this->request->contactId))); 
@@ -122,12 +122,30 @@ class ContactManagerServices extends Connection {
                 case "updateContactPhoneNumber":
                     echo json_encode((object) array('contactPhoneNumbers' => $this->updateContactPhoneNumber($this->request->contactId,$this->request->phone,$this->request->updatePhone))); 
                     break;
+                case "getVoterInfo":
+                    echo json_encode((object) array(
+                        'voter' => $this->getVoter($this->request->voterId),
+                        'history' => $this->getHistory($this->request->voterId)
+                    ));                     
+                    break;
+                case "updateContactVoterID":
+                    echo json_encode((object) array('contact' => $this->updateContactVoterID($this->request->contactId,$this->request->voterId)));                     
+                    break;
                 default:
                     print "Not Matched";
                     break;
             }
             exit;
         }
+    }
+    private function updateContactVoterID($contactId,$voterId) {
+        $SQL = "UPDATE Contacts SET `Voter ID` = :voterId WHERE `Contact ID` = :contactId";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":contactId" => $contactId,
+            ":voterId" => $voterId
+        ));
+        return $this->getContact($contactId);
     }
     private function updateContactPhoneNumber($contactId,$phone,$updatePhone) {
         $contactPhoneNumbers = $this->getContactPhoneNumbers($contactId);
@@ -351,7 +369,7 @@ class ContactManagerServices extends Connection {
         for($i = 0; $i < count($result); ++$i) {
             $result[$i]->{"Contact Types"} = $this->getContactTypesForContact($result[$i]->{"Contact ID"});
             $result[$i]->{"Contact Phones"} = $this->getContactPhoneNumbers($result[$i]->{"Contact ID"});
-            $result[$i]->{"Contact Emails"} = $this->getContactEmails($result[$i]->{"Contact ID"});            
+            $result[$i]->{"Contact Emails"} = $this->getContactEmails($result[$i]->{"Contact ID"}); 
         }
         return (count($result) > 0)?$result[0]:null;        
     }
@@ -420,6 +438,24 @@ class ContactManagerServices extends Connection {
         // ini_set('memory_limit', '2000M');
         // return $sth->fetchAll(PDO::FETCH_OBJ);
         return $sth;
+    }
+    private function getVoter($voterId) {
+        ini_set('max_execution_time', 1500); //300 seconds = 5 minutes
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Voters` WHERE `Voter ID` = :voterId";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":voterId" => $voterId
+        ));
+        return $sth->fetchAll(PDO::FETCH_OBJ);
+    }
+    private function getHistory($voterId) {
+        ini_set('max_execution_time', 1500); //300 seconds = 5 minutes
+        $SQL = "SELECT * FROM `FloridaVoterData`.`Histories` WHERE `Voter ID` = :voterId";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute(array(
+            ":voterId" => $voterId
+        ));
+        return $sth->fetchAll(PDO::FETCH_OBJ);
     }
     private function getSearchRows($databaseName,$tableName,$conditions=array()) {
         ini_set('max_execution_time', 1500); //300 seconds = 5 minutes
