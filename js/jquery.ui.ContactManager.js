@@ -1396,7 +1396,7 @@
                         )                        
                     )
                 );
-
+                    
                 tabDiv
                 .append(sr.searchResultTable);
                 $.extend(sr,{
@@ -1407,23 +1407,61 @@
                             "oTableTools": {
                                 "sSwfPath": "js/TableTools-2.1.2/media/swf/copy_csv_xls_pdf.swf",
                                 "aButtons": [
-                                        "copy", "csv", "xls", "pdf",
-                                        {
-                                                "sExtends":    "collection",
-                                                "sButtonText": "Save",
-                                                "aButtons":    [ "csv", "xls", "pdf" ]
-                                        }
+                                    "copy", "csv", "xls", "pdf",
+                                    {
+                                        "sExtends":    "collection",
+                                        "sButtonText": "Save",
+                                        "aButtons":    [ "csv", "xls", "pdf" ]
+                                    }
                                 ]                                
                             },                            
+                            "aaSorting": $.map($.grep($.map(self.searchOptions.voterColumns,function(column,index) {
+                                return {
+                                    name: column.Field,
+                                    index: index,
+                                    direction: 'asc'
+                                };                                        
+                            }),function(obj,index) {
+                                return ($.inArray(obj.name,["Name Last","Name First","Voter ID","Name Middle"]) !== -1);
+                            }),function(obj,index) {
+                                return [[
+                                    obj.index,
+                                    obj.direction
+                                ]];
+                            }),
                             "aoColumns": $.merge([
-                                {"sTitle": "Reserved for Later&nbsp;","sClass": "NestedRuleChainJobColumn","bVisible": true,"mDataProp": null,"sDefaultContent":""}                                
+                                {"sTitle": "Reserved for Later&nbsp;","sClass": "NestedRuleChainJobColumn","bVisible": true,"mDataProp": null,"sDefaultContent":"", "bSortable": false }                                
                             ],$.map(self.searchOptions.voterColumns,function(column,index) {
+                                var cols =  $.map(self.searchOptions.voterColumns,function(column,index) {
+                                    return column.Field;
+                                });
                                 return {
                                     "sTitle": column.Field,
                                     "sClass": "NestRuleChainJobColumn",
                                     "bVisible": true,
                                     "mDataProp": column.Field,
-                                    "sDefaultContent": ""
+                                    "sDefaultContent": "",
+                                    "bSortable": true,
+                                    "aDataSort": {
+                                        sortArray: function(field,index) {
+                                            var sortArr = [ index ];
+                                            switch(field) {
+                                                case "Name First":
+                                                    sortArr = [ $.inArray("Voter ID",cols), index, $.inArray("Name Last",cols),$.inArray("Name Middle",cols)];
+                                                    break;
+                                                case "Name Last":
+                                                    sortArr = [ $.inArray("Voter ID",cols), index, $.inArray("Name First",cols),$.inArray("Name Middle",cols)];
+                                                    break;
+                                                case "Name Middle":
+                                                    sortArr = [ $.inArray("Voter ID",cols), index, $.inArray("Name Last",cols),$.inArray("Name First",cols)];
+                                                    break;
+                                                default:
+                                                    sortArr = [ index ];
+                                                    break;
+                                            }
+                                            return sortArr;
+                                        }
+                                    }.sortArray(column.Field,index)
                                 };
                             })),
                             "sScrollX": "100%",

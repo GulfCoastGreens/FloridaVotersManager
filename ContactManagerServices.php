@@ -503,6 +503,7 @@ class ContactManagerServices extends Connection {
                         $sqlwhere[] = "(`County Code` = :county)";
                         break;
                     case "address":
+                        error_log("%".$value."%");
                         $prevalues = array_merge($prevalues,array(":".$key => "%".$value."%"));
                         $sqlwhere[] = "(`Residence Address Line 1` LIKE :address OR `Residence Address Line 2` LIKE :address OR `Mailing Address Line 1` LIKE :address OR `Mailing Address Line 2` LIKE :address OR `Mailing Address Line 3` LIKE :address)";
                         break;
