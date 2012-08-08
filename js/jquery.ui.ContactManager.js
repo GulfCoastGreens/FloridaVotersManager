@@ -1144,8 +1144,8 @@
                                                                     $('<option />').val(addNewContactResponse.contact["Contact ID"]).html([[addNewContactResponse.contact["Name Last"],addNewContactResponse.contact["Name First"]].join(', '),($.trim(addNewContactResponse["Nickname"]).length > 0)?" ("+addNewContactResponse["Nickname"]+")":""].join(""))                                                                    
                                                                 )
                                                                 .children().sort(function(a,b) {
-                                                                    var nameA = a.html().toLowerCase();
-                                                                    var nameB = b.html().toLowerCase();
+                                                                    var nameA = $(a).html().toLowerCase();
+                                                                    var nameB = $(b).html().toLowerCase();
                                                                     if (nameA < nameB) //sort string ascending
                                                                         return -1; 
                                                                     if (nameA > nameB)
