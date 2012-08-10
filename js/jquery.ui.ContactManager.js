@@ -1635,9 +1635,9 @@
                     );
                     // conditions
                     self.getSearchRows(searchCriteria,function(getSearchRowsResult) {
+                        cm.tabs( "option", "selected", 1 );
                         sr.searchResultDataTable.fnClearTable();
                         sr.searchResultDataTable.fnAddData(getSearchRowsResult.rows);
-                        cm.tabs( "option", "selected", 1 );
                     });
                 });
             });
