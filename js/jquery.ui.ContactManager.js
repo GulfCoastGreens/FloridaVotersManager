@@ -99,6 +99,53 @@
                                     disabled: false
                                 })
                         }
+                    },
+                    edit: {
+                        first: {
+                            input: $('<input />'),
+                            label: "First Name: ",
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Update",
+                                    disabled: false
+                                })
+                        },
+                        last: {
+                            input: $('<input />'),
+                            label: "Last Name: ",
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Update",
+                                    disabled: false
+                                })
+                        },
+                        nickname: {
+                            input: $('<input />'),
+                            label: "Nickname: ",
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Update",
+                                    disabled: false
+                                })
+                        },
+                        phone: {
+                            input: $('<select />'),
+                            label: "Phone Numbers: ",
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Edit",
+                                    disabled: false
+                                })
+                        },
+                        email: {
+                            input: $('<select />'),
+                            label: "Email Addresses: ",
+                            control: $('<button />').button({
+                                    text: true,
+                                    label: "Edit",
+                                    disabled: false
+                                })
+                        }
                     }
                 },
                 info: {
@@ -800,6 +847,71 @@
                 });                    
             });
         },
+        buildContactEditingTable: function() {
+            var self = this,
+            el = self.element,
+            o = self.options,
+            sf = o.searchFields,
+            sr = o.searchResults,
+            fields = o.contactVoterInfo.fields;
+            // contactVoterInfo.info.bio
+            return $('<table />')
+            .append(
+                $('<tr />')
+                .append(
+                    $('<th />',{
+                        "colspan": "3"
+                    })
+                    .html("Contact Editing Functions")
+                    .addClass('ui-state-default ui-widget-header ui-corner-all')
+                )
+            ).each(function(index,contactEditingTable) {
+                $.each(fields.edit,function(key,value) {
+                    $(contactEditingTable).append(
+                        $('<tr />')
+                        .append(
+                            $('<td />')
+                            .append(
+                                $('<label />',{
+                                    "for": key
+                                })
+                                .html(value.label)
+                            )
+                        )
+                        .append(
+                            $('<td />')
+                            .append(
+                                value.input
+                                .prop({
+                                    "id": key
+                                })
+                                .each(function(index,input) {
+                                    console.log('Key is '+key);
+                                })
+                            )
+                        ).each(function(index,contactEditingTable) {
+                            if(typeof(value.control) === "undefined") {
+                                $(contactEditingTable).append(
+                                    $('<td />')
+                                );                                
+                            } else {
+                                $(contactEditingTable).append(
+                                    $('<td />')
+                                    .append(
+                                        value.control
+                                        .prop({
+                                            "id": key+"Control"
+                                        })
+                                        .each(function(index,control) {
+                                        })
+                                    )
+                                );                                
+                            }
+                        })
+                    );                
+                });
+            });
+        },
         buildContactFunctionsTable: function() {
             var self = this,
             el = self.element,
@@ -1313,6 +1425,23 @@
                             $(div).append(o.contactTabs[contactKey].content);
                             switch(contactKey) {
                                 case "update":
+                                    o.contactTabs[contactKey].content
+                                    .append(
+                                        $('<table />')
+                                        .append(
+                                            $('<tbody />')
+                                            .append(
+                                                $('<tr />')
+                                                .append(
+                                                    $('<td />')
+                                                    .css({
+                                                        "vertical-align": "top"
+                                                    })
+                                                    .append(self.buildContactEditingTable())
+                                                )
+                                            )
+                                        )
+                                    );
                                     break;
                                 case "campaign":
                                     break;
