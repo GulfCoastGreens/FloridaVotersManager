@@ -3,10 +3,19 @@
         options: { 
             tabs: {
                 search: {
-                    label: "Search Voters"
+                    label: "Search Voters",
+                    item: $('<li />'),
+                    root: $('<div />')
+                },
+                matches: {
+                    label: "Search Matches",
+                    item: $('<li />'),
+                    root: $('<div />')
                 },
                 contact: {
-                    label: "Contacts"
+                    label: "Contacts",
+                    item: $('<li />'),
+                    root: $('<div />')
                 }
             },
             contactTabs: {
@@ -348,49 +357,42 @@
                     }
                 } 
             });            
-            self.buildMenu();                
+            self.buildMenu(self.ContactManager);
+            // self.buildMenuOld();                
         },
-        buildMenu: function() {
+        buildMenu: function(cm) {
             var self = this,
             o = self.options,
             el = self.element,
-            vt = self.ContactManager,
-            rt = $(self.rootTab = $('<ul />')).appendTo(vt);
-//            o.ajaxImage.ajaxStart(function() {
-//                $(this).fadeIn();
-//            }).ajaxStop(function() {
-//                    $(this).fadeOut();
-//            });
+            rt = $(self.rootTab = $('<ul />')).appendTo(cm);
             $.each(o.tabs,function(key,obj) {
-                $.extend(o.tabs[key],{
-                    item: $('<li />',{
-                            "id": "#"+key
-                        })
-                        .append(
-                            $('<a />',{
-                                'href': "#"+key
-                            })
-                            .append(obj.label)
-                        ),
-                    content: $('<div />',{
-                            "id": key
-                        })
-                });
-                rt.append(o.tabs[key].item);
-                vt.append(o.tabs[key].content);
+                obj.item
+                .appendTo(rt)
+                .prop("id","#"+key)
+                .append(
+                    $('<a />',{
+                        'href': "#"+key
+                    })
+                    .append(obj.label)
+                );
+                obj.root
+                .prop("id",key)
+                .appendTo(cm);
+            });
+            cm.tabs();            
+            $.each(o.tabs,function(key,obj) {
                 switch(key) {
                     case "search":
-                        
-                        self.searchForm(o.tabs[key].content);
+                        self.searchForm(obj.root);
+                        break;
+                    case "matches":
                         
                         break;
                     case "contact":
-                        self.contactForm(o.tabs[key].content);                        
+                        self.contactForm(obj.root);                        
                         break;
-                }
-                
+                }                
             });
-            vt.tabs();
         },
         getSearchOptions: function(callback) {
             $.ajax({
@@ -1476,6 +1478,7 @@
             o = self.options,
             sf = o.searchFields,
             sr = o.searchResults,
+            cm = self.ContactManager,
             se = self.searchElements = {};
             self.getSearchOptions(function(searchOptionsResponse) {
                 self.searchOptions = searchOptionsResponse;
@@ -1525,8 +1528,9 @@
                         )                        
                     )
                 );
-                    
-                tabDiv
+//                 tabDiv
+                cm.tabs( "option", "selected", 1 );
+                o.tabs.matches.root    
                 .append(sr.searchResultTable);
                 $.extend(sr,{
                     searchResultDataTable: sr.searchResultTable
@@ -1603,6 +1607,7 @@
                             "aaData": []                
                         })
                 });
+                cm.tabs( "option", "selected", 0 );
                 sf.searchButton.click(function() {
                     var searchCriteria = $.extend({},
                         ($.trim(sf.name.firstName.input.val()) == "")?{}:{first: $.trim(sf.name.firstName.input.val())},
@@ -1632,6 +1637,7 @@
                     self.getSearchRows(searchCriteria,function(getSearchRowsResult) {
                         sr.searchResultDataTable.fnClearTable();
                         sr.searchResultDataTable.fnAddData(getSearchRowsResult.rows);
+                        cm.tabs( "option", "selected", 1 );
                     });
                 });
             });
