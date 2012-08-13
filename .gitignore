@@ -1,3 +1,7 @@
 /.htaccess
 /conf/settings.ini
 .DS_Store
+
+.htaccess_1
+
+.htaccess_2
