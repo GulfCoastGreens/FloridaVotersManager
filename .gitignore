@@ -1,3 +1,7 @@
 /.htaccess
 /conf/settings.ini
+/Histories/*.txt
+/Histories/*.TXT
+/Voters/*.txt
+/Voters/*.TXT
 .DS_Store
