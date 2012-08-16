@@ -10,26 +10,22 @@
  *
  * @author jam
  */
-include_once 'conf/Connection.php';
 include_once 'County.php';
 
-class Voters extends Connection {
-    //put your code here
+class Voters extends County {
     private $importFile;
     private $dateString;
     private $countyCode;
-    private $county;
-    private $countyName;
-    private $SQL;
+    public $countyName;
+    public $SQL;
     function __construct($importFile) {
         // "ALA_20120602.txt";
-        $this->importFile = $importFile;
-        $this->dateString = substr($importFile,-8,-4);
-        $this->countyCode = substr($importFile,0,3);
-        $this->county = new County();
-        $this->countyName = $this->county->getCountyName($this->countyCode, TRUE);
-        $this->filePath = getcwd()."/Voters/".$importFile;
         parent::__construct();
+        $this->importFile = $importFile;
+        $this->dateString = substr($importFile,-12,-4);
+        $this->countyCode = substr($importFile,0,3);
+        $this->countyName = $this->getCountyName($this->countyCode, true);
+        $this->filePath = getcwd()."/Voters/".$importFile;
         $this->SQL = $this->buildSQL();
         $sth = $this->dbh->prepare($this->SQL);
         $sth->execute();
@@ -101,8 +97,8 @@ CREATE TEMPORARY TABLE countyTemp LIKE `FloridaVoterData`.`Voters`;
 
 LOAD DATA LOCAL INFILE '{$this->filePath}'
     INTO TABLE countyTemp
-    FIELDS TERMINATED BY '\t'
-    LINES TERMINATED BY '\n'
+    FIELDS TERMINATED BY '\\t'
+    LINES TERMINATED BY '\\n'
     (`County Code`,
     `Voter ID`,
     `Name Last`,
@@ -169,4 +165,7 @@ EOT;
 
 }
 
+//$voters = new Voters("ALA_20120602.txt");
+//print $voters->SQL;
+// print "County name is: ".$voters->countyName;
 ?>

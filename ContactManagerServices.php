@@ -11,8 +11,8 @@
  * @author jam
  */
 include_once 'conf/Connection.php';
-include_once 'Database.php';
-include_once 'Table.php';
+include_once 'conf/Database.php';
+include_once 'conf/Table.php';
 
 class ContactManagerServices extends Connection {
     //put your code here

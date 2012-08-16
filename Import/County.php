@@ -10,7 +10,7 @@
  *
  * @author jamesjones
  */
-include_once 'conf/Connection.php';
+include_once '../conf/Connection.php';
 
 class County extends Connection {
     //put your code here
@@ -21,12 +21,8 @@ class County extends Connection {
     }
     
     public function getCountyName($countyCode="",$safe=false) {
-        $countyCode = ($countyCode="")?$this->code:$countyCode;
-        $sth = $this->dbh->prepare(
-            "SELECT `County Description` FROM `FloridaVoterCodes`.`County Codes` WHERE `County Code`=:countyCode",
-            array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY)
-        );
-        $sth->execute(array(':countyCode' => $countyCode));                        
+        $sth = $this->dbh->prepare("SELECT `County Description` FROM `FloridaVoterCodes`.`County Codes` WHERE `County Code`=:countyCode");
+        $sth->execute(array(':countyCode' => $countyCode));   
         $countyName = $sth->fetchColumn();
         return ($safe)?$countyName:$this->safeDBNames($countyName);
     }
