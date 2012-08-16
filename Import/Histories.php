@@ -25,7 +25,7 @@ class Histories extends County {
         $this->dateString = substr($importFile,-12,-4);
         $this->countyCode = substr($importFile,0,3);
         $this->countyName = $this->getCountyName($this->countyCode, true);
-        $this->filePath = getcwd()."/Histories/".$importFile;
+        $this->filePath = getcwd()."/../Histories/".$importFile;
         $this->SQL = $this->buildSQL();
         $sth = $this->dbh->prepare($this->SQL);
         $sth->execute();
