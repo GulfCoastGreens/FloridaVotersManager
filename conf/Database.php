@@ -10,7 +10,7 @@
  *
  * @author jam
  */
-include_once 'conf/Connection.php';
+include_once 'Connection.php';
 class Database extends Connection {
     //put your code here
     public $name;
