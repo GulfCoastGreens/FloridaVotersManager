@@ -12,14 +12,14 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
  *
- * For details please refer to: http://www.stpetgreens.org
+ * For details please refer to: https://stpetgreens.org
  * 
- * @package     jquery.ui.VoterParse.js
+ * @package     Connection.php
  * @version     0.1
- * @author      James Jones (www.stpetegreens.org)
+ * @author      James Jones (stpetegreens.org)
  * @since       04/11/2012
  * @license     GPL v2
- * @category    VoterParse
+ * @category    FloridaVotersManager
  * @copyright   2011-2012 James Jones, all rights reserved.
  */
 class Connection {
