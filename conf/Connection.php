@@ -32,11 +32,14 @@ class Connection {
             $this->settings['connection']['user'], 
             $this->settings['connection']['passwd'],
             array(
-                PDO::ATTR_PERSISTENT => true
+                PDO::ATTR_PERSISTENT => true,
+                PDO::MYSQL_ATTR_LOCAL_INFILE => true,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             )
         );                
-        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, 1);
+        // $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->dbh->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);         
+        $this->dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, (version_compare($this->dbh->getAttribute(PDO::ATTR_SERVER_VERSION), '5.1.17', '<')));
     }
     public function __destruct() {
         $this->dbh = null;
