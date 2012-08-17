@@ -6,15 +6,14 @@
  */
 
 /**
- * Description of Database
+ * Description of Table
  *
  * @author jam
  */
-include_once 'conf/Connection.php';
-class Database extends Connection {
+include_once 'Connection.php';
+class Table extends Connection {
     //put your code here
     public $name;
-    public $tables = array();
     function __construct() {
         parent::__construct();
     }

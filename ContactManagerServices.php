@@ -11,8 +11,8 @@
  * @author jam
  */
 include_once 'conf/Connection.php';
-include_once 'Database.php';
-include_once 'Table.php';
+include_once 'conf/Database.php';
+include_once 'conf/Table.php';
 
 class ContactManagerServices extends Connection {
     //put your code here
@@ -55,7 +55,8 @@ class ContactManagerServices extends Connection {
                         'races' => $this->getRows("FloridaVoterCodes","Race Codes",$this->request->conditions=array())->fetchAll(PDO::FETCH_OBJ),
                         'parties' => $this->getRows("FloridaVoterCodes","Party Codes",$this->request->conditions=array())->fetchAll(PDO::FETCH_OBJ),
                         'statuses' => $this->getRows("FloridaVoterCodes","Voter Status Codes",$this->request->conditions=array())->fetchAll(PDO::FETCH_OBJ),
-                        'voterColumns' => $this->getColumnsFromTable("FloridaVoterData","Voters")
+                        'voterColumns' => $this->getColumnsFromTable("FloridaVoterData","Voters"),
+                        'importDates' => $this->getImportDates()
                     ));                    
                     break;
                 case "getRows":
@@ -137,6 +138,12 @@ class ContactManagerServices extends Connection {
             }
             exit;
         }
+    }
+    private function getImportDates() {
+        $SQL = "SELECT * FROM `FloridaVoterCodes`.`Import Dates` ORDER BY `Import Date` DESC";
+        $sth = $this->dbh->prepare($SQL);
+        $sth->execute();
+        return $sth->fetchAll(PDO::FETCH_OBJ);                
     }
     private function updateContactVoterID($contactId,$voterId) {
         $SQL = "UPDATE Contacts SET `Voter ID` = :voterId WHERE `Contact ID` = :contactId";
