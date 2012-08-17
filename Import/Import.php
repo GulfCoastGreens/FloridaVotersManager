@@ -18,6 +18,7 @@ class Import extends County {
     function __construct() {
         parent::__construct();
         $this->importVoters();
+        $this->importHistories();
     }
     
     function importVoters() {
@@ -30,10 +31,8 @@ class Import extends County {
                         print $filename."\n";
                         new Voters($filename);
                     }                    
-                }
-                
-            }
-            
+                }                
+            }            
         }        
     }
     function importHistories() {
