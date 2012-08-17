@@ -79,7 +79,7 @@ SET `Export Date` = STR_TO_DATE('{$this->dateString}','%Y%m%d'),
 
 REPLACE INTO `FloridaVoterData`.`Histories` SELECT * FROM countyTemp;
 
-REPLACE INTO `FloridaVoterData`.`{$this->countyName} History` SELECT * FROM countyTemp';
+REPLACE INTO `FloridaVoterData`.`{$this->countyName} History` SELECT * FROM countyTemp;
 
 DROP TEMPORARY TABLE IF EXISTS countyTemp;
    
