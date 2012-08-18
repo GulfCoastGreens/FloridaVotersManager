@@ -42,7 +42,6 @@ class Import extends County {
             while (false !== ($filename = readdir($handle))) {
                 if ($filename != "." && $filename != ".." && $filename != ".htaccess") {
                     if(!is_dir($importPath."/".$filename)) {
-                        ++$fileCount;
                         print "Parsing ".$filename." file count of ".(++$fileCount)."\n";
                         new Voters($filename);
                     }                    
