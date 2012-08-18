@@ -1,14 +1,26 @@
 <?php
-
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of Voters
+ * Handles actual import of voters and table breakdowns
+ * 
+ * This handles county files and the merge into the database
+ * 
+ * CONTACT: jamjon3@stpetegreens.org
+ * 
+ * LICENSE: This source file is free software, under the GPL v2 license, as supplied with this software.
  *
- * @author jam
+ * This source file is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
+ *
+ * For details please refer to: https://stpetgreens.org
+ * 
+ * @package     Voters.php
+ * @version     0.1
+ * @author      James Jones (stpetegreens.org)
+ * @since       04/11/2012
+ * @license     GPL v2
+ * @category    FloridaVotersManager
+ * @copyright   2011-2012 James Jones, all rights reserved.
  */
 include_once 'County.php';
 
@@ -17,6 +29,7 @@ class Voters extends County {
     private $dateString;
     private $countyCode;
     public $countyName;
+    public $partySQL;
     public $SQL;
     function __construct($importFile) {
         // "ALA_20120602.txt";
@@ -26,6 +39,7 @@ class Voters extends County {
         $this->countyCode = substr($importFile,0,3);
         $this->countyName = $this->getCountyName($this->countyCode, true);
         $this->filePath = getcwd()."/../Voters/".$importFile;
+        $this->partySQL = $this->buildParties();
         $this->SQL = $this->buildSQL();
         $sth = $this->dbh->prepare($this->SQL);
         $sth->execute();
@@ -40,7 +54,29 @@ class Voters extends County {
             print $e->getTraceAsString();
         }        
     }
-    
+    function buildParties() {
+        $sth = $this->dbh->prepare("SELECT * FROM `FloridaVoterCodes`.`Party Codes` ORDER BY `Party Simple Name`");
+        $sth->execute();
+        $SQL = "";
+        foreach($sth->fetchAll(PDO::FETCH_OBJ) as $partyObj) {
+            $partyCode = $partyObj->{'Party Code'};
+            $party = $partyObj->{'Party Simple Name'};
+            $SQL .= <<<EOT
+CREATE TABLE IF NOT EXISTS `FloridaVoterData`.`{$party} Voters` LIKE `FloridaVoterData`.`Voters`;
+DELETE FROM `FloridaVoterData`.`{$party} Voters` WHERE `County Code`='{$this->countyCode}' AND `Export Date`=STR_TO_DATE('{$this->dateString}','%Y%m%d');
+
+CREATE TABLE IF NOT EXISTS `FloridaVoterData`.`{$this->countyName} {$party} Voters` LIKE `FloridaVoterData`.`Voters`;
+
+DELETE FROM `FloridaVoterData`.`{$this->countyName} {$party} Voters` WHERE `County Code`='{$this->countyCode}' AND `Export Date`=STR_TO_DATE('{$this->dateString}','%Y%m%d');
+
+INSERT INTO `FloridaVoterData`.`{$this->countyName} {$party} Voters` SELECT * FROM countyTemp WHERE `Party Affiliation`='{$partyCode}';
+
+INSERT INTO `FloridaVoterData`.`{$party} Voters` SELECT * FROM countyTemp WHERE `Party Affiliation`='{$partyCode}';
+   
+EOT;
+        }
+        return $SQL;
+    }
     function buildSQL() {
         return <<<EOT
 CREATE TABLE IF NOT EXISTS `FloridaVoterData`.`Voters` (
@@ -144,18 +180,7 @@ LOAD DATA LOCAL INFILE '{$this->filePath}'
 INSERT INTO `FloridaVoterData`.`Voters` SELECT * FROM countyTemp;
 INSERT INTO `FloridaVoterData`.`{$this->countyName} Voters` SELECT * FROM countyTemp;
 
-CREATE TABLE IF NOT EXISTS `FloridaVoterData`.`Green Voters` LIKE `FloridaVoterData`.`Voters`;
-DELETE FROM `FloridaVoterData`.`Green Voters` WHERE `County Code`='{$this->countyCode}' AND `Export Date`=STR_TO_DATE('{$this->dateString}','%Y%m%d');
-
-CREATE TABLE IF NOT EXISTS `FloridaVoterData`.`{$this->countyName} Green Voters` LIKE `FloridaVoterData`.`Voters`;
-
-DELETE FROM `FloridaVoterData`.`{$this->countyName} Green Voters` WHERE `County Code`='{$this->countyCode}' AND `Export Date`=STR_TO_DATE('{$this->dateString}','%Y%m%d');
-
-INSERT INTO `FloridaVoterData`.`{$this->countyName} Green Voters` SELECT * FROM countyTemp WHERE `Party Affiliation`='GRE';
-
-INSERT INTO `FloridaVoterData`.`Green Voters` SELECT * FROM countyTemp WHERE `Party Affiliation`='GRE';
-
--- CALL `FloridaVoterCodes`.`buildPartyVoters`('{$this->countyCode}','{$this->countyName}',STR_TO_DATE('{$this->dateString}','%Y%m%d'));
+{$this->partySQL}
 
 DROP TEMPORARY TABLE IF EXISTS countyTemp;
    
@@ -165,7 +190,7 @@ EOT;
 
 }
 
-//$voters = new Voters("ALA_20120602.txt");
-//print $voters->SQL;
+# $voters = new Voters("ALA_20120602.txt");
+# print $voters->SQL;
 // print "County name is: ".$voters->countyName;
 ?>
