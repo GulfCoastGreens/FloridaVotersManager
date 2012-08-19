@@ -577,7 +577,11 @@ class ContactManagerServices extends Connection {
                     case "precinctSuffix":
                         $prevalues = array_merge($prevalues,array(":".$key => "%".$value."%"));
                         $sqlwhere[] = "(`Precinct Suffix` LIKE :precinctSuffix)";
-                        break;                    
+                        break;   
+                    case "exportDate":
+                        $prevalues = array_merge($prevalues,array(":".$key => $value));
+                        $sqlwhere[] = "(`Export Date` = :exportDate)";
+                        break;
                 }
             }
             error_log($SQL." WHERE ".implode(" AND ",$sqlwhere));

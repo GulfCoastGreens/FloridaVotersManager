@@ -337,6 +337,15 @@
                         input: $('<input />'),
                         label: "Precinct Suffix"
                     }
+                },
+                importData: {
+                    importDate: {
+                        input: $('<select />')
+                        .append(
+                            $('<option />').val('').html('-- All Import Dates --')
+                        ),
+                        label: "Select Import Date"
+                    }                    
                 }
             }
         },
@@ -1520,6 +1529,26 @@
                                     "vertical-align": "top"
                                 })
                                 .append(sf.searchButton)
+                                .append(
+                                    $('<span />')
+                                    .append(
+                                        sf.importData.importDate.input
+                                        .prop({
+                                            "id": "importDate"
+                                        })
+                                        .each(function(index,importSelect) {
+                                            $.each(self.searchOptions.importDates, function(index,importDate) {
+                                                $('<option />').val(importDate["Import Date"]).html(importDate["Import Date"]).appendTo($(importSelect));
+                                            });
+                                        })
+                                    )
+                                    .append(
+                                        $('<label />',{
+                                            "for": "importDate"
+                                        })
+                                        .html(sf.importData.importDate.label)
+                                    )
+                                )
                             )
                         )
                     )
@@ -1654,7 +1683,8 @@
                         ($.trim(sf.registration.precinct.input.val()) == "")?{}:{precinct: $.trim(sf.registration.precinct.input.val())},
                         ($.trim(sf.registration.precinctGroup.input.val()) == "")?{}:{precinctGroup: $.trim(sf.registration.precinctGroup.input.val())},
                         ($.trim(sf.registration.precinctSplit.input.val()) == "")?{}:{precinctSplit: $.trim(sf.registration.precinctSplit.input.val())},
-                        ($.trim(sf.registration.precinctSuffix.input.val()) == "")?{}:{precinctSuffix: $.trim(sf.registration.precinctSuffix.input.val())}
+                        ($.trim(sf.registration.precinctSuffix.input.val()) == "")?{}:{precinctSuffix: $.trim(sf.registration.precinctSuffix.input.val())},
+                        ($.trim(sf.importData.importDate.input.val()) == "")?{}:{exportDate: $.trim(sf.importData.importDate.input.val())}
                     );
                     // conditions
                     self.getSearchRows(searchCriteria,function(getSearchRowsResult) {
