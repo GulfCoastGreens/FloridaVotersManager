@@ -32,7 +32,6 @@ class Voters extends County {
     public $partySQL;
     public $SQL;
     function __construct($importFile) {
-        // "ALA_20120602.txt";
         parent::__construct();
         $this->importFile = $importFile;
         $this->dateString = substr($importFile,-12,-4);

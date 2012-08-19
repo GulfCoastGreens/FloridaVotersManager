@@ -22,7 +22,7 @@
  * @category    FloridaVotersManager
  * @copyright   2011-2012 James Jones, all rights reserved.
  */
-    include_once "ContactManagerServices.php";
+    include_once "service/ContactManagerServices.php";
     // Merge the POST and GET vars
     $params = array_merge($_GET, $_POST);
 

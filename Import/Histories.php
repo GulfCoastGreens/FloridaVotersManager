@@ -31,7 +31,6 @@ class Histories extends County {
     public $countyName;
     public $SQL;
     function __construct($importFile) {
-        // "ALA_H_20120602.txt";
         parent::__construct();
         $this->importFile = $importFile;
         $this->dateString = substr($importFile,-12,-4);
