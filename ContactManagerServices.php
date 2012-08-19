@@ -22,9 +22,9 @@
  * @category    FloridaVotersManager
  * @copyright   2011-2012 James Jones, all rights reserved.
  */
-include_once '../conf/Connection.php';
-include_once '../conf/Database.php';
-include_once '../conf/Table.php';
+include_once 'conf/Connection.php';
+include_once 'conf/Database.php';
+include_once 'conf/Table.php';
 
 class ContactManagerServices extends Connection {
     //put your code here
