@@ -116,6 +116,17 @@
                                     switch(key) {
                                         case "importButton":
                                             $(input).data({
+                                                uploadForm: $('<form />',{
+                                                    "id": "uploadRaw",
+                                                    "action": "index.php?method=uploadRaw",
+                                                    "method": "POST",
+                                                    "enctype": "multipart/form-data"
+                                                }),
+                                                uploadTable: $('<table />',{
+                                                    "id": "files"
+                                                }),
+                                                uploadButton: $('<button />'),
+                                                uploadDiv: $('<div />').addClass('file_upload_label').html("Upload files"),
                                                 importDate: $('<input />'),
                                                 voterZip: $('<input />',{
                                                     "type": "file",
@@ -167,15 +178,74 @@
                                                             opacity: 0.5
                                                         },
                                                         open: function() {
+//                                                            $(this).append(
+//                                                                $(input).data('importDate').datepicker({
+//                                                                    dateFormat: 'yy-mm-dd',
+//                                                                    showButtonPanel: true 
+//                                                                })
+//                                                            ).append(
+//                                                                $(input).data('voterZip')
+//                                                            ).append(
+//                                                                $(input).data('historyZip')
+//                                                            );
                                                             $(this).append(
-                                                                $(input).data('importDate').datepicker({
-                                                                    dateFormat: 'yy-mm-dd',
-                                                                    showButtonPanel: true 
+                                                                $(input).data('uploadTable')
+                                                            ).prepend(
+                                                                $(input).data('uploadForm')
+                                                                .append(
+                                                                    $(input).data('voterZip')
+                                                                )
+                                                                .append(
+                                                                    $(input).data('historyZip')
+                                                                )
+                                                                .append(
+                                                                    $(input).data('uploadButton')
+                                                                )
+                                                                .append(
+                                                                    $(input).data('uploadDiv')
+                                                                ).fileupload({
+                                                                    uploadTable: $(input).data('uploadTable'),
+                                                                    buildUploadRow: function (files, index, handler) {
+                                                                        return $('<tr />')
+                                                                        .append(
+                                                                            $('<td />').html(files[index].name)
+                                                                        )
+                                                                        .append(
+                                                                            $('<td />')
+                                                                            .addClass('file_upload_progress')
+                                                                            .append($('<div />'))
+                                                                        )
+                                                                        .append(
+                                                                            $('<td />')
+                                                                            .addClass('file_upload_cancel')
+                                                                            .append(
+                                                                                $('<button />',{
+                                                                                    "title": "Cancel"
+                                                                                })
+                                                                                .addClass('ui-state-default ui-corner-all')
+                                                                                .append(
+                                                                                    $('<span />')
+                                                                                    .addClass('ui-icon ui-icon-cancel')
+                                                                                    .html("Cancel")
+                                                                                )
+                                                                            )
+                                                                        );
+//                                                                        return $('<tr><td>' + files[index].name + '<\/td>' +
+//                                                                                '<td class="file_upload_progress"><div><\/div><\/td>' +
+//                                                                                '<td class="file_upload_cancel">' +
+//                                                                                '<button class="ui-state-default ui-corner-all" title="Cancel">' +
+//                                                                                '<span class="ui-icon ui-icon-cancel">Cancel<\/span>' +
+//                                                                                '<\/button><\/td><\/tr>');
+                                                                    },
+                                                                    buildDownloadRow: function (file, handler) {
+                                                                        return $('<tr />')
+                                                                        .append(
+                                                                            $('<td />')
+                                                                            .html(file.name)
+                                                                        );
+                                                                        // return $('<tr><td>' + file.name + '<\/td><\/tr>');
+                                                                    }
                                                                 })
-                                                            ).append(
-                                                                $(input).data('voterZip')
-                                                            ).append(
-                                                                $(input).data('historyZip')
                                                             );
                                                         },
                                                         buttons: {
