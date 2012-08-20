@@ -25,6 +25,7 @@
 include_once 'conf/Connection.php';
 include_once 'conf/Database.php';
 include_once 'conf/Table.php';
+include_once 'Import/Import.php';
 
 class ContactManagerServices extends Connection {
     //put your code here
@@ -144,12 +145,35 @@ class ContactManagerServices extends Connection {
                 case "updateContactVoterID":
                     echo json_encode((object) array('contact' => $this->updateContactVoterID($this->request->contactId,$this->request->voterId)));                     
                     break;
+                case "importRawData":
+                    $import = new Import();
+                    echo json_encode((object) array('status' => $import->status));
+                    break;
                 default:
                     print "Not Matched";
                     break;
             }
             exit;
         }
+    }
+    private function importRawData() {
+        $importDates = $this->getImportDates();
+        $getStatuses = function($importDate) {
+            return $importDate["status"];
+        };
+        if(in_array("pending",array_map($importDates,$getStatuses))) {
+            new Import();
+            $findPending = function($importDate) {
+                return $importDate->status == "pending";
+            };
+            $sth = $this->dbh->prepare("UPDATE `FloridaVoterCodes`.`Import Dates` SET status='processing' WHERE status='pending'");
+            $sth->execute();
+            return (object) array(
+                "importDates" => array_filter($importDate, $findPending)
+            );
+        } elseif(in_array("pending",array_map($importDates,$getStatuses))) {
+            
+        }        
     }
     private function getImportDates() {
         $SQL = "SELECT * FROM `FloridaVoterCodes`.`Import Dates` ORDER BY `Import Date` DESC";

@@ -39,6 +39,11 @@
                     label: "Contacts",
                     item: $('<li />'),
                     root: $('<div />')
+                },
+                importer: {
+                    label: "Import Raw Data",
+                    item: $('<li />'),
+                    root: $('<div />')
                 }
             },
             contactTabs: {
@@ -70,6 +75,18 @@
                         })
                     )
                 ),
+            importerFields: {
+                fields: {
+                    importButton: {
+                        input: $('<button />').button({
+                                text: true,
+                                label: "Import",
+                                disabled: false
+                            }),
+                        label: "Start Importing Raw Data"                        
+                    }
+                }
+            },
             contactVoterInfo: {
                 fields: {
                     fnx: {
@@ -422,6 +439,9 @@
                         break;
                     case "contact":
                         self.contactForm(obj.root);                        
+                        break;
+                    case "importer":
+                        obj.root.Importer();
                         break;
                 }                
             });

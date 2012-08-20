@@ -28,10 +28,18 @@ include_once 'Voters.php';
 include_once 'Histories.php';
 class Import extends County {
     //put your code here
+    public $status;
     function __construct() {
         parent::__construct();
-        $this->importVoters();
-        $this->importHistories();
+        $pid = pcntl_fork();
+        if($pid) {
+            // Parent process
+            $this->status = "Import Started";
+        } else {
+            // Child process
+            $this->importVoters();
+            $this->importHistories();
+        }
     }
     
     function importVoters() {
@@ -42,7 +50,7 @@ class Import extends County {
             while (false !== ($filename = readdir($handle))) {
                 if ($filename != "." && $filename != ".." && $filename != ".htaccess") {
                     if(!is_dir($importPath."/".$filename)) {
-                        print "Parsing ".$filename." file count of ".(++$fileCount)."\n";
+                        $this->updateImportDatesStatus(substr($filename,-12,-4),"Parsing ".$filename." file count of ".(++$fileCount));
                         new Voters($filename);
                     }                    
                 }                
@@ -57,7 +65,7 @@ class Import extends County {
             while (false !== ($filename = readdir($handle))) {
                 if ($filename != "." && $filename != ".." && $filename != ".htaccess") {
                     if(!is_dir($importPath."/".$filename)) {
-                        print "Parsing ".$filename." file count of ".(++$fileCount)."\n";
+                        $this->updateImportDatesStatus(substr($filename,-12,-4),"Parsing ".$filename." file count of ".(++$fileCount));
                         new Histories($filename);
                     }                    
                 }                
@@ -66,6 +74,6 @@ class Import extends County {
     }
 }
 
-new Import();
+// new Import();
 
 ?>

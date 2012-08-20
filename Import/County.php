@@ -55,6 +55,15 @@ class County extends Connection {
             return array();
         }
     }
+    function updateImportDatesStatus($dateString,$message) {
+        $sth = $this->dbh->prepare("SELECT * FROM `FloridaVoterCodes`.`Import Dates` WHERE `Import Date` = STR_TO_DATE('{$dateString}','%Y%m%d')");
+        $sth->execute();
+        $importDate = $sth->fetch();
+        $usth = $this->dbh->prepare("UPDATE `FloridaVoterCodes`.`Import Dates` SET status=:message WHERE `Import Date` = STR_TO_DATE('{$dateString}','%Y%m%d')");
+        $usth->execute(array(
+            ":message" => $importDate->message."\n".$message
+        ));
+    }    
 }
 
 ?>

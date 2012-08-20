@@ -48,6 +48,8 @@
         </script>
             
         <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.2/jquery.dataTables.min.js"></script>
+        <script type='text/javascript' src='js/jquery.Importer.js'></script>
+        <script type='text/javascript' src='js/jquery.ui.Importer.js'></script>
         <script type='text/javascript' src='js/jquery.ui.ContactManager.js'></script>
         <script type='text/javascript' src='js/TableTools-2.1.2/media/js/TableTools.min.js'></script>
         <script language='javascript'>

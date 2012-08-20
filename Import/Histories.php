@@ -43,12 +43,12 @@ class Histories extends County {
         try {
             $i = 1;
             do {
-                echo "Processing Multiquery item ".$i."\n";
+                $this->updateImportDatesStatus($this->dateString,"Processing Multiquery item ".$i);
                 $i++;
             } while ($sth->nextRowset());                            
         } catch(PDOException $e) {
-            print $e->getMessage(); 
-            print $e->getTraceAsString();
+            $this->updateImportDatesStatus($this->dateString,$e->getMessage());
+            $this->updateImportDatesStatus($this->dateString,$e->getTraceAsString());
         }        
     }
     function buildSQL() {
