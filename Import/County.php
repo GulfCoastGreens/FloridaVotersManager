@@ -22,7 +22,8 @@
  * @category    FloridaVotersManager
  * @copyright   2011-2012 James Jones, all rights reserved.
  */
-include_once '../conf/Connection.php';
+set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT']."/ContactManager/conf");
+include_once "Connection.php";
 
 class County extends Connection {
     //put your code here

@@ -1,0 +1,4 @@
+ForceType application/octet-stream
+<FilesMatch "(?i)\.(gif|jpe?g|png|zip)$">
+  ForceType none
+</FilesMatch>
