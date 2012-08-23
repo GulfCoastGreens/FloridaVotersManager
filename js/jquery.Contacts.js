@@ -13,7 +13,7 @@
  *
  * For details please refer to: https://stpetgreens.org
  * 
- * @package     jquery.Importer.js
+ * @package     jquery.Contacts.js
  * @version     0.1
  * @author      James Jones (stpetegreens.org)
  * @since       04/11/2012
@@ -22,7 +22,7 @@
  * @copyright   2011-2012 James Jones, all rights reserved.
  */
 (function($) {
-    $.Importer = {
+    $.Contacts = {
         importRawData: function(callback) {
             $.ajax({
                 title: "Please wait...",

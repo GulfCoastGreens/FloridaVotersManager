@@ -52,9 +52,10 @@
         <script type='text/javascript' src="js/blueimp-jQuery-File-Upload/js/jquery.fileupload.js"></script>
         <script type='text/javascript' src="js/blueimp-jQuery-File-Upload/js/jquery.fileupload-ui.js"></script>        
         <script type='text/javascript' src='js/jquery.Importer.js'></script>
+        <script type='text/javascript' src='js/jquery.Contacts.js'></script>
         <script type='text/javascript' src='js/jquery.ui.Importer.js'></script>
         <script type='text/javascript' src='js/jquery.ui.ContactManager.js'></script>
-        <script type='text/javascript' src='js/TableTools-2.1.2/media/js/TableTools.min.js'></script>
+        <script type='text/javascript' src='js/TableTools-2.1.3/media/js/TableTools.min.js'></script>
         <script language='javascript'>
             google.setOnLoadCallback(function() {
                 // executes when complete page is fully loaded, including all frames, objects and images
