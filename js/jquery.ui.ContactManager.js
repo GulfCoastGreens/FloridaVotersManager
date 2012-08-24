@@ -1610,7 +1610,7 @@
                         .dataTable({
                             "sDom": '<"H"Tfr>t<"F"ip>',
                             "oTableTools": {
-                                "sSwfPath": "js/TableTools-2.1.2/media/swf/copy_csv_xls_pdf.swf",
+                                "sSwfPath": "js/TableTools-2.1.3/media/swf/copy_csv_xls_pdf.swf",
                                 "aButtons": [
                                     "copy", "csv", "xls", "pdf",
                                     {

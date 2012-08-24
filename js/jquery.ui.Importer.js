@@ -26,6 +26,14 @@
         options: { 
             importerFields: {
                 fields: {
+                    uploadButton: {
+                        input: $('<button />').button({
+                                text: true,
+                                label: "Upload and kickoff",
+                                disabled: false
+                            }),
+                        label: "Upload and kickoff import"                        
+                    },
                     importButton: {
                         input: $('<button />').button({
                                 text: true,
@@ -114,6 +122,110 @@
                                     "id": key
                                 }).each(function(index,input) {
                                     switch(key) {
+                                        case "uploadButton":
+                                            $(input).data({
+                                                voterZip: $('<input />',{
+                                                    "type": "file",
+                                                    "name": "files[]",
+                                                    "id": "voterZip",
+                                                    "data-url": "Upload.php",
+                                                    "data-sequential-uploads": "true",
+                                                    "data-form-data": '{ "script" : "true" }'
+                                                }),
+                                                voterUploadDone: $('<div />'),
+                                                voterProgress: $('<div />'),
+                                                voterProgressBar: $('<p />').css({
+                                                    "width": "0%",
+                                                    "height": "18px",
+                                                    "background": "green"
+                                                }),
+                                                historyZip: $('<input />',{
+                                                    "type": "file",
+                                                    "name": "historyZip",
+                                                    "id": "historyZip"
+                                                })
+                                            }).click(function() {
+                                                if(typeof $(this).data('hash') === "undefined") {
+                                                    $('<div />')
+                                                    .addClass('ui-state-default ui-widget-content')
+                                                    .append(
+                                                        $('<p />')
+                                                        .css({
+                                                            "text-align": "center",
+                                                            "margin-top": "0px",
+                                                            "margin-bottom": "0px",
+                                                            "padding": "0px"
+                                                        })
+                                                    )                                                                                                    
+                                                    .dialog({                                                     
+                                                        autoOpen: true,
+                                                        bgiframe: true,
+                                                        resizable: false,
+                                                        title: 'Upload and kickoff import',
+                                                        height:620,
+                                                        width:760,
+                                                        modal: true,
+                                                        zIndex: 3999,
+                                                        overlay: {
+                                                            backgroundColor: '#000',
+                                                            opacity: 0.5
+                                                        },
+                                                        open: function() {
+                                                            $(this).append(
+                                                                $(input).data('voterZip').fileupload({
+                                                                    dataType: 'json',
+                                                                    add: function(e, data) {
+                                                                        data.submit();
+                                                                    },
+                                                                    progressall: function(e, data) {
+                                                                        var progress = parseInt(data.loaded / data.total * 100, 10);
+                                                                        $(input).data('voterProgressBar').css({
+                                                                            "width": progress+"%"
+                                                                        });
+                                                                    },
+                                                                    done: function(e, data) {
+                                                                        $.each(data.result,function(index,file) {
+                                                                            $(input).data('voterUploadDone').append(
+                                                                                $('<p />').html("Uploading "+file.name+" completed")
+                                                                            );
+                                                                        });
+                                                                    }
+                                                                })
+                                                            ).append(
+                                                                $(input).data('voterUploadDone')
+                                                            ).append(
+                                                                $(input).data('voterProgress')
+                                                                .append(
+                                                                    $(input).data('voterProgressBar')
+                                                                )
+                                                            );
+                                                        },
+                                                        buttons: {
+                                                            "OK": function() {
+                                                                var dialog = $(this);
+                                                                $(input).data({
+                                                                    hash: {
+                                                                        // importDate: $(input).data('importDate').detach().val(),
+                                                                        voterZip: $(input).data('voterZip').detach().val(),
+                                                                        historyZip: $(input).data('historyZip').detach().val()
+                                                                    }
+                                                                }).click();
+                                                                dialog.dialog('close');
+                                                                dialog.dialog('destroy');
+                                                                dialog.remove();                                                                
+                                                            },
+                                                            "Cancel": function() {
+                                                                $(this).dialog('close');
+                                                                $(this).dialog('destroy');
+                                                                $(this).remove();                                                                
+                                                            }
+                                                        }
+                                                    });
+                                                } else {
+                                                    
+                                                }
+                                            });
+                                            break;
                                         case "importButton":
                                             $(input).data({
                                                 uploadForm: $('<form />',{

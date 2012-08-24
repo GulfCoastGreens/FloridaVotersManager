@@ -37,7 +37,7 @@
         <title>Contact Manager</title>
         <meta name="description" content="A mechanism for using remote voter databases" />
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/south-street/jquery-ui.css" type="text/css" rel="Stylesheet" />
-        <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.2/css/jquery.dataTables.css">
+        <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.3/css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="js/blueimp-jQuery-File-Upload/css/jquery.fileupload-ui.css">
         <script type='text/javascript' src='https://www.google.com/jsapi'></script>
         
@@ -48,13 +48,14 @@
             google.load("maps", "2");
         </script>
             
-        <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.2/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.3/jquery.dataTables.min.js"></script>
+        <script type='text/javascript' src='js/TableTools-2.1.3/media/js/TableTools.min.js'></script>
         <script type='text/javascript' src="js/blueimp-jQuery-File-Upload/js/jquery.fileupload.js"></script>
         <script type='text/javascript' src="js/blueimp-jQuery-File-Upload/js/jquery.fileupload-ui.js"></script>        
         <script type='text/javascript' src='js/jquery.Importer.js'></script>
+        <script type='text/javascript' src='js/jquery.Contacts.js'></script>
         <script type='text/javascript' src='js/jquery.ui.Importer.js'></script>
         <script type='text/javascript' src='js/jquery.ui.ContactManager.js'></script>
-        <script type='text/javascript' src='js/TableTools-2.1.2/media/js/TableTools.min.js'></script>
         <script language='javascript'>
             google.setOnLoadCallback(function() {
                 // executes when complete page is fully loaded, including all frames, objects and images

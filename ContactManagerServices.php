@@ -22,10 +22,8 @@
  * @category    FloridaVotersManager
  * @copyright   2011-2012 James Jones, all rights reserved.
  */
-include_once 'conf/Connection.php';
-include_once 'conf/Database.php';
-include_once 'conf/Table.php';
-include_once 'Import/Import.php';
+set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT']."/ContactManager/conf");
+include_once "Connection.php";
 
 class ContactManagerServices extends Connection {
     //put your code here
@@ -47,6 +45,7 @@ class ContactManagerServices extends Connection {
             } else {
                 error_log("NO PARAMETERS");
             }
+            error_log("Method is {$this->params['method']}");
             header('Content-type: application/json');
             switch($this->params["method"]) {
                 case "someMethod":
@@ -149,12 +148,51 @@ class ContactManagerServices extends Connection {
                     $import = new Import();
                     echo json_encode((object) array('status' => $import->status));
                     break;
+                case "uploadVoterZip":
+                    return $this->uploadVoterZip();
+                    break;
                 default:
                     print "Not Matched";
                     break;
             }
             exit;
         }
+    }
+    private function uploadVoterZip() {
+        error_log("Found the function");
+        ini_set('memory_limit', '1024M');
+        ini_set('post_max_size', '1024M');
+        ini_set('upload_max_filesize', '1024M'); 
+        $upload_handler = new UploadHandler();
+        
+        header('Pragma: no-cache');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Content-Disposition: inline; filename="files.json"');
+        header('X-Content-Type-Options: nosniff');
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE');
+        header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
+
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'OPTIONS':
+                break;
+            case 'HEAD':
+            case 'GET':
+                return $upload_handler->get();
+                break;
+            case 'POST':
+                if (isset($_REQUEST['_method']) && $_REQUEST['_method'] === 'DELETE') {
+                    return $upload_handler->delete();
+                } else {
+                    return $upload_handler->post();
+                }
+                break;
+            case 'DELETE':
+                return $upload_handler->delete();
+                break;
+            default:
+                header('HTTP/1.1 405 Method Not Allowed');
+        }        
     }
     private function importRawData() {
         $importDates = $this->getImportDates();

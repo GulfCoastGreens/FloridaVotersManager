@@ -22,6 +22,19 @@
  * @category    FloridaVotersManager
  * @copyright   2011-2012 James Jones, all rights reserved.
  */
+set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT']."/ContactManager");
+set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT']."/ContactManager/conf");
+set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT']."/ContactManager/Import");
+set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER['DOCUMENT_ROOT']."/ContactManager/js/blueimp-jQuery-File-Upload/server/php");
+
+include_once "Database.php";
+include_once "Table.php";
+include_once "Import.php";
+include_once 'County.php';
+include_once 'Voters.php';
+include_once 'Histories.php';
+require_once "upload.class.php";
+
 class Connection {
     public $dbh;
     public $settings;
