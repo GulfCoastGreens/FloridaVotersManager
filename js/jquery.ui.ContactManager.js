@@ -362,7 +362,29 @@
                             $('<option />').val('').html('-- All Import Dates --')
                         ),
                         label: "Select Import Date"
-                    }                    
+                    },
+                    months: {
+                        input: $('<select />')
+                        .each(function(index,select) {
+                            var i = 1;
+                            for (i=1; i<=12; i++) {
+                                $(select)
+                                .append(
+                                    $('<option />').val(i).html(i.toString()).append(" Month"+((i > 1)?"s":""))
+                                );
+                            }
+                        }),
+                        label: "Limit to new party registrations in the last "                        
+                    },
+                    useNewlyRegistered: {
+                        input: $('<input />',{
+                            "type": "checkbox",
+                            "name": "useNewlyRegistered",
+                            "title": "You MUST have both a county and party affiliation selected to use this"
+                        })
+                        .prop('disabled',true),
+                        label: "Enable filter"
+                    }
                 }
             }
         },
@@ -619,12 +641,18 @@
                                 var select;
                                 switch(key) {
                                     case "party":
-                                        select = $(input).append($('<option />').val("").html("--Select Party Registration--"));
+                                        select = $(input).append($('<option />').val("").html("--Select Party Registration--")).change(function() {
+                                            if($(this).val() == "") {
+                                                sf.importData.useNewlyRegistered.input.prop('checked',false).prop('disabled',true);
+                                            } else if(sf.location.county.input.val() != "") {
+                                                sf.importData.useNewlyRegistered.input.prop("disabled",false);
+                                            }
+                                        });
                                         $.each(self.searchOptions.parties,function(index,party) {
                                             select.append(
                                                 $('<option />').html(party["Party Description"]).val(party["Party Code"])
                                             );
-                                        });
+                                        });                                        
                                         break;
                                     case "status":
                                         select = $(input).append($('<option />').val("").html("--Select Registration Status--"));
@@ -680,7 +708,13 @@
                             .each(function(index,input) {
                                 switch(key) {
                                     case "county":
-                                        var select = $(input).append($('<option />').val("").html("--Select County--"));
+                                        var select = $(input).append($('<option />').val("").html("--Select County--")).change(function() {
+                                            if($(this).val() == "") {
+                                                sf.importData.useNewlyRegistered.input.prop('checked',false).prop('disabled',true);
+                                            } else if(sf.registration.party.input.val() != "") {
+                                                sf.importData.useNewlyRegistered.input.prop("disabled",false);
+                                            }
+                                        });
                                         $.each(self.searchOptions.counties,function(index,county) {
                                             select.append(
                                                 $('<option />').html(county["County Description"]).val(county["County Code"])
@@ -1552,6 +1586,12 @@
                                 .append(
                                     $('<span />')
                                     .append(
+                                        $('<label />',{
+                                            "for": "importDate"
+                                        })
+                                        .html(sf.importData.importDate.label)
+                                    )                                    
+                                    .append(
                                         sf.importData.importDate.input
                                         .prop({
                                             "id": "importDate"
@@ -1561,12 +1601,36 @@
                                                 $('<option />').val(importDate["Import Date"]).html(importDate["Import Date"]).appendTo($(importSelect));
                                             });
                                         })
+                                    )                                    
+                                )
+                                .append(
+                                    $('<span />')
+                                    .css({
+                                        "padding-left": "2cm"
+                                    })
+                                    .append(
+                                        $('<label />',{
+                                            "for": "months"
+                                        })
+                                        .html(sf.importData.months.label)
+                                    )
+                                    .append(
+                                        sf.importData.months.input
+                                        .prop({
+                                            "id": "months"
+                                        })
+                                    )
+                                    .append(
+                                        sf.importData.useNewlyRegistered.input
+                                        .prop({
+                                            "id": "useNewlyRegistered"
+                                        })
                                     )
                                     .append(
                                         $('<label />',{
-                                            "for": "importDate"
+                                            "for": "useNewlyRegistered"
                                         })
-                                        .html(sf.importData.importDate.label)
+                                        .html(sf.importData.useNewlyRegistered.label)
                                     )
                                 )
                             )
@@ -1704,7 +1768,26 @@
                         ($.trim(sf.registration.precinctGroup.input.val()) == "")?{}:{precinctGroup: $.trim(sf.registration.precinctGroup.input.val())},
                         ($.trim(sf.registration.precinctSplit.input.val()) == "")?{}:{precinctSplit: $.trim(sf.registration.precinctSplit.input.val())},
                         ($.trim(sf.registration.precinctSuffix.input.val()) == "")?{}:{precinctSuffix: $.trim(sf.registration.precinctSuffix.input.val())},
-                        ($.trim(sf.importData.importDate.input.val()) == "")?{}:{exportDate: $.trim(sf.importData.importDate.input.val())}
+                        ($.trim(sf.importData.importDate.input.val()) == "")?{}:{exportDate: $.trim(sf.importData.importDate.input.val())},
+                        {
+                            handleNewlyRegistered: function() {
+                                if(
+                                    ($.trim(sf.location.county.input.val()) != "") &&
+                                    ($.trim(sf.registration.party.input.val()) != "") &&
+                                    sf.importData.useNewlyRegistered.input.is(':checked')
+                                ) {
+                                    return {
+                                        newlyRegistered: {
+                                            county: $.trim(sf.location.county.input.val()),
+                                            party: $.trim(sf.registration.party.input.val()),
+                                            months: sf.importData.months.input.val()
+                                        }
+                                    };
+                                } else {
+                                    return {};
+                                }
+                            }
+                        }.handleNewlyRegistered()
                     );
                     // conditions
                     self.getSearchRows(searchCriteria,function(getSearchRowsResult) {

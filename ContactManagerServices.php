@@ -158,6 +158,15 @@ class ContactManagerServices extends Connection {
             exit;
         }
     }
+    private function byCountyAndPartyNewRegistered($countyCode,$partyAffiliation,$months) {
+        $sth = $this->dbh->prepare("CALL `FloridaVoterData`.byCountyAndPartyNewRegistered(:countyCode,:partyAffiliation,:months)");
+        $sth->execute(array(
+            ":countyCode" => $countyCode,
+            ":partyAffiliation" => $partyAffiliation,
+            ":months" => $months
+        ));
+        return $sth->fetchAll(PDO::FETCH_OBJ);        
+    }
     private function uploadVoterZip() {
         error_log("Found the function");
         ini_set('memory_limit', '1024M');
@@ -643,6 +652,13 @@ class ContactManagerServices extends Connection {
                     case "exportDate":
                         $prevalues = array_merge($prevalues,array(":".$key => $value));
                         $sqlwhere[] = "(`Export Date` = :exportDate)";
+                        break;
+                    case "newlyRegistered":
+                        $getVoterIds = function($row) {
+                            return $row->{'Voter ID'};
+                        };
+                        $voterids = array_map($getVoterIds, $this->byCountyAndPartyNewRegistered($value->county,$value->party,$value->months));
+                        $sqlwhere[] = (count($voterids) > 0)?"(`Voter ID` IN(".implode(",",$voterids)."))":"(`Voter ID` IS NULL)";                            
                         break;
                 }
             }
