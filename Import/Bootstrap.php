@@ -49,6 +49,63 @@ CREATE DATABASE IF NOT EXISTS `FloridaVoterData` /*!40100 DEFAULT CHARACTER SET 
 
 CREATE DATABASE IF NOT EXISTS `FloridaVoterCodes` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
 
+USE `FloridaVoterData`;
+
+delimiter $$
+
+CREATE PROCEDURE `byCountyAndPartyNewRegistered`(`County Code` CHAR(3),`Party Affiliation` CHAR(3),`months` INT(3))
+BEGIN
+  SET @getMinDateSQL = CONCAT_WS('',"SELECT MIN(ed.`Export Date`)  INTO @minDate FROM (
+		SELECT t1.`Export Date` FROM `Voters` t1 WHERE `County Code`=? AND `Party Affiliation`=? GROUP BY t1.`Export Date` ORDER BY t1.`Export Date` DESC LIMIT ",CAST(`months` AS CHAR),"
+	) ed");
+	PREPARE stmt1 FROM @getMinDateSQL;
+	SET @countyCode = `County Code`;
+	SET @partyAffiliation = `Party Affiliation`;
+	EXECUTE stmt1 USING @countyCode, @partyAffiliation;
+	SET @minDate = CAST(@minDate AS DATE);
+	DEALLOCATE PREPARE stmt1;
+
+	SET @getMaxDateSQL = "SELECT MAX(`Export Date`) INTO @maxDate FROM `Voters` WHERE `County Code`=? AND `Party Affiliation`=?";
+	PREPARE stmt1 FROM @getMaxDateSQL;
+	EXECUTE stmt1 USING @countyCode, @partyAffiliation;
+	SET @maxDate = CAST(@maxDate AS DATE);
+	DEALLOCATE PREPARE stmt1;
+
+	SET @getDateCount = CONCAT_WS('',"SELECT COUNT(edc.`Export Date`) INTO @dateCount FROM
+	(
+		SELECT t1.`Export Date` FROM `Voters` t1  WHERE  t1.`County Code`=? AND t1.`Party Affiliation`=? GROUP BY t1.`Export Date`ORDER BY t1.`Export Date` DESC LIMIT ",CAST(`months` AS CHAR),"
+	) edc");
+	PREPARE stmt1 FROM @getDateCount;
+	EXECUTE stmt1 USING @countyCode, @partyAffiliation;
+	SET @dateCount = CAST(@dateCount AS UNSIGNED);
+	DEALLOCATE PREPARE stmt1;
+
+	-- Find newly registered voters in a party (who may have changed parties within the span)
+	SET @newVotersSQL = "SELECT ng.*,
+	( 
+		SELECT MIN(t1.`Export Date`) FROM `Voters` t1 WHERE t1.`County Code`= ? AND t1.`Party Affiliation`= ? AND t1.`Voter ID` = ng.`Voter ID` AND t1.`Export Date` BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
+	) AS `Registered Detected Date`
+	FROM
+	(
+		SELECT hgv.* FROM 
+		(
+			SELECT * FROM `Voters`
+			WHERE `County Code`= ? AND `Party Affiliation`= ? AND `Export Date` BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
+		) hgv
+		WHERE 
+		(
+			SELECT COUNT(ht.`Voter ID`) FROM `Voters` ht
+			WHERE ht.`County Code`= ? AND ht.`Party Affiliation`= ? AND ht.`Export Date` BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
+			AND hgv.`Voter ID` = ht.`Voter ID`
+		) < ?  AND hgv.`Export Date`= ?
+	) ng";
+	PREPARE stmt1 FROM @newVotersSQL;
+	EXECUTE stmt1 USING @countyCode, @partyAffiliation,@minDate,@maxDate,@countyCode, @partyAffiliation,@minDate,@maxDate,@countyCode, @partyAffiliation,@minDate,@maxDate,@dateCount,@maxDate;
+	DEALLOCATE PREPARE stmt1;
+	
+END$$
+
+
 USE `FloridaVoterCodes`;
 
 DROP procedure IF EXISTS `bootstrapCountyCodes`;
