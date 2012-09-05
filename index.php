@@ -39,6 +39,7 @@
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/south-street/jquery-ui.css" type="text/css" rel="Stylesheet" />
         <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.3/css/jquery.dataTables.css">
         <link rel="stylesheet" type="text/css" href="js/blueimp-jQuery-File-Upload/css/jquery.fileupload-ui.css">
+        <link rel="stylesheet" type="text/css" href="js/TableTools-2.1.3/media/css/TableTools.css">
         <script type='text/javascript' src='https://www.google.com/jsapi'></script>
         
         <script language='javascript'>
